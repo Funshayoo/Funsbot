@@ -17,18 +17,18 @@ class Fun(commands.Cog):
         print('Loaded fun.py!')
 
     #flip command
-    @app_commands.command(name="flip", description = "Flip a coin")
+    @app_commands.command(name="flip", description ="Flip a coin")
     async def flip(self, interaction):
         await interaction.response.send_message(random.choice(flip_var))
 
     #bitches command
-    @app_commands.command(name="bitches", description = "Funni")
+    @app_commands.command(name="bitches", description ="Funni")
     async def bitches(self, interaction):
         await interaction.response.send_message('No bitches <:KEKW:1007719515620126852>')
 
 
     #manho command
-    @app_commands.command(name="manho", description = "<3 manho")
+    @app_commands.command(name="manho", description ="<3 manho")
     async def manho(self, interaction):
         await interaction.response.send_message('Kocham manho <:PepeHappy:1007638220131024997>')
 

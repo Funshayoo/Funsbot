@@ -13,7 +13,7 @@ class Mod(commands.Cog):
         print('Loaded mod.py!')
 
     #kick command
-    @app_commands.command(name="kick", description = "Kick the user")
+    @app_commands.command(name="kick", description ="Kick the user")
     @has_permissions(administrator=True)
     @app_commands.describe(reason = "For what reason")
     async def kick(self, ctx, member: discord.Member, reason: str):

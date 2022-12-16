@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 intents = discord.Intents().all()
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
-bot = commands.Bot(command_prefix='$', intents=intents)
+bot = commands.Bot(command_prefix='$', intents=intents, help_command=None)
 
 load_dotenv()
 
