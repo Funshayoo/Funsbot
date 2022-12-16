@@ -17,8 +17,8 @@ class Notion(commands.Cog):
 
     @app_commands.command(name="zadania", description ="Prints the tomorow homework from notion database")
     @commands.has_role("8c")
-    async def clear(self, ctx):
-        await ctx.channel.send('test')
+    async def clear(self, interaction):
+        await interaction.response.send_message('test')
 
 async def setup(client):
     await client.add_cog(Notion(client))

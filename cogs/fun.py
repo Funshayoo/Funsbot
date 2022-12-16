@@ -1,7 +1,7 @@
 import discord
-import random
 from discord.ext import commands
 from discord import app_commands
+import random
 
 #flip array
 flip_var = ['heads!', 'tails!']
