@@ -67,7 +67,7 @@ class Mod(commands.Cog):
     @app_commands.default_permissions(administrator = True)
     @app_commands.describe(title = "What title", message = "What to say")
     async def announce(self, interaction, title: str, message: str):
-        channel = self.client.get_channel(1008123488755793980)
+        channel = self.client.get_channel(1053696319325229087)
         guild = interaction.guild
 
         if message == None:
