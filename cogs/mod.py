@@ -14,7 +14,7 @@ class Mod(commands.Cog):
 
     #kick command
     @app_commands.command(name="kick", description ="Kick the user")
-    @has_permissions(administrator=True)
+    @app_commands.default_permissions(administrator = True)
     @app_commands.describe(reason = "For what reason")
     async def kick(self, interaction, member: discord.Member, reason: str):
         await interaction.response.send_message(f'Kicked {member.mention} for reason {reason}')
@@ -22,7 +22,7 @@ class Mod(commands.Cog):
 
     #ban command
     @app_commands.command(name="ban", description ="Ban the user")
-    @has_permissions(administrator=True)
+    @app_commands.default_permissions(administrator = True)
     @app_commands.describe(reason = "For what reason")
     async def ban(self, interaction, member: discord.Member, reason: str):
         await interaction.response.send_message(f'Banned {member.mention} for reason {reason}')
@@ -30,7 +30,7 @@ class Mod(commands.Cog):
 
     #mute command
     @app_commands.command(name="mute", description ="Mute the user")
-    @has_permissions(administrator=True)
+    @app_commands.default_permissions(administrator = True)
     @app_commands.describe(reason = "For what reason")
     async def mute(self, interaction, member: discord.Member, reason: str):
         guild = interaction.guild
@@ -47,7 +47,7 @@ class Mod(commands.Cog):
 
     #unmute comand
     @app_commands.command(name="unmute", description ="Unmute the user")
-    @has_permissions(administrator=True)
+    @app_commands.default_permissions(administrator = True)
     async def unmute(self, interaction, member: discord.Member):
         guild = interaction.guild
         mutedRole = discord.utils.get(guild.roles, name='Muted')
@@ -57,26 +57,27 @@ class Mod(commands.Cog):
 
 
     @app_commands.command(name="clear", description ="Clear the chat")
-    @has_permissions(administrator=True)
+    @app_commands.default_permissions(administrator = True)
     @app_commands.describe(amount = "How much messages")
     async def clear(self, interaction, amount: int):
         await interaction.channel.purge(limit=amount)
 
     #announcements command
     @app_commands.command(name="announce", description ="Send a message to announcements channel")
-    @has_permissions(administrator=True)
-    @app_commands.describe(message = "What to say")
-    async def announce(self, interaction, message: str):
+    @app_commands.default_permissions(administrator = True)
+    @app_commands.describe(title = "What title", message = "What to say")
+    async def announce(self, interaction, title: str, message: str):
         channel = self.client.get_channel(1008123488755793980)
+        guild = interaction.guild
 
         if message == None:
             return
         else:
             embed = discord.Embed(
-        title='Ważna informacja!',
-        description=message)
-        await channel.send(embed=embed)
-        await channel.send(interaction.message.guild.default_role)
+            title=title,
+            description=message)
+            await channel.send(embed=embed)
+            await channel.send(guild.default_role)
 
 async def setup(client):
     await client.add_cog(Mod(client))

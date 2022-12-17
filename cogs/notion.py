@@ -16,7 +16,7 @@ class Notion(commands.Cog):
         print('Loaded notion.py!')
 
     @app_commands.command(name="zadania", description ="Prints the tomorow homework from notion database")
-    @commands.has_role("8c")
+    @app_commands.checks.has_role("8c")
     async def clear(self, interaction):
         await interaction.response.send_message('test')
 
