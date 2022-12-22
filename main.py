@@ -13,13 +13,16 @@ bot = commands.Bot(command_prefix='$', intents=intents, help_command=None)
 
 load_dotenv()
 
+
 async def load_extensions():
     for filename in os.listdir('./cogs'):
         if filename.endswith('.py'):
-            # cut off the .py from the file name
+            # ? cut off the .py from the file name
             await bot.load_extension(f'cogs.{filename[:-3]}')
 
-#changes bot activity to $help
+# ? changes bot activity to $help
+
+
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Game(name='$help'))
@@ -29,7 +32,9 @@ async def on_ready():
     except Exception as e:
         print(e)
 
-#on join message + add role
+# ? on join message + add role
+
+
 @bot.event
 async def on_member_join(member):
     channel = bot.get_channel(1007632094899490886)
@@ -41,26 +46,28 @@ async def on_member_join(member):
     await member.add_roles(role)
 
 
-#Checks for the messages
+# ? Checks for the messages
 @bot.event
 async def on_message(message):
 
-    #gówno
+    # gówno
     answ = ['gówno jeden zero', 'jajco', 'chujów sto']
     qstn = ['co', '?', 'co?', 'Co', 'Co?']
 
-    if(message.author == bot):
+    if (message.author == bot):
         return
     elif message.content in qstn:
         await message.channel.send(random.choice(answ))
 
-    #allow using commands
+    #! allow using commands
     await bot.process_commands(message)
 
-#starts the bot
+#! starts the bot
+
+
 async def main():
     async with bot:
         await load_extensions()
         await bot.start(os.getenv("DISCORD_TOKEN"))
-        
+
 asyncio.run(main())
