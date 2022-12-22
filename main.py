@@ -25,7 +25,7 @@ async def load_extensions():
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity=discord.Game(name='$help'))
+    await bot.change_presence(activity=discord.Game(name='/help'))
     print('Bot is ready!')
     try:
         synced = await bot.tree.sync()
@@ -47,10 +47,10 @@ async def on_member_join(member):
 
 
 # ? Checks for the messages
+
+
 @bot.event
 async def on_message(message):
-
-    # gówno
     answ = ['gówno jeden zero', 'jajco', 'chujów sto']
     qstn = ['co', '?', 'co?', 'Co', 'Co?']
 
@@ -62,12 +62,20 @@ async def on_message(message):
     #! allow using commands
     await bot.process_commands(message)
 
-#! starts the bot
+# ? help command
+
+
+@bot.tree.command(name="help", description="use this command to get some help")
+async def help(interaction: discord.Interaction):
+    embed = discord.Embed(
+        title="", description="You can use commands by typing /**command**", color=0xffffff)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
+
+# ! starts the bot
 
 
 async def main():
     async with bot:
         await load_extensions()
         await bot.start(os.getenv("DISCORD_TOKEN"))
-
 asyncio.run(main())
