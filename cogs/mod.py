@@ -13,7 +13,7 @@ class Mod(commands.Cog):
     async def on_ready(self):
         print('Loaded mod.py!')
 
-    # kick command
+    # ? kick command
     @app_commands.command(name="kick", description="Kick the user")
     @app_commands.default_permissions(administrator=True)
     @app_commands.describe(reason="For what reason")
@@ -21,7 +21,7 @@ class Mod(commands.Cog):
         await interaction.response.send_message(f'Kicked {member.mention} for reason {reason}')
         await member.kick(reason=reason)
 
-    # ban command
+    # ? ban command
     @app_commands.command(name="ban", description="Ban the user")
     @app_commands.default_permissions(administrator=True)
     @app_commands.describe(reason="For what reason")
@@ -29,7 +29,7 @@ class Mod(commands.Cog):
         await interaction.response.send_message(f'Banned {member.mention} for reason {reason}')
         await member.ban(reason=reason)
 
-    # mute command
+    # ? mute command
     @app_commands.command(name="mute", description="Mute the user")
     @app_commands.default_permissions(administrator=True)
     @app_commands.describe(reason="For what reason")
@@ -46,7 +46,7 @@ class Mod(commands.Cog):
             await member.add_roles(mutedRole, reason=reason)
             await interaction.response.send_message(f'Muted {member.mention} for reason {reason}')
 
-    # unmute comand
+    # ? unmute comand
     @app_commands.command(name="unmute", description="Unmute the user")
     @app_commands.default_permissions(administrator=True)
     async def unmute(self, interaction: discord.Interaction, member: discord.Member):
@@ -62,7 +62,7 @@ class Mod(commands.Cog):
     async def clear(self, interaction: discord.Interaction, amount: int):
         await interaction.channel.purge(limit=amount)
 
-    # announcements command
+    # ? announcements command
     @app_commands.command(name="announce", description="Send a message to announcements channel")
     @app_commands.default_permissions(administrator=True)
     @app_commands.describe(title="What title", message="What to say")

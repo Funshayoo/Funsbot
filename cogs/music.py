@@ -8,11 +8,11 @@ class Music(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-        # all the music related stuff
+        # * all the music related stuff
         self.is_playing = False
         self.is_paused = False
 
-        # 2d array containing [song, channel]
+        # * 2d array containing [song, channel]
         self.music_queue = []
         self.YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True'}
         self.FFMPEG_OPTIONS = {
@@ -20,7 +20,7 @@ class Music(commands.Cog):
 
         self.vc = None
 
-    # searching the item on youtube
+    # ? searching the item on youtube
     def search_yt(self, item):
         with YoutubeDL(self.YDL_OPTIONS) as ydl:
             try:
@@ -35,10 +35,10 @@ class Music(commands.Cog):
         if len(self.music_queue) > 0:
             self.is_playing = True
 
-            # get the first url
+            # ? get the first url
             m_url = self.music_queue[0][0]['source']
 
-            # remove the first element as you are currently playing it
+            # ! remove the first element as you are currently playing it
             self.music_queue.pop(0)
 
             self.vc.play(discord.FFmpegPCMAudio(
@@ -46,25 +46,25 @@ class Music(commands.Cog):
         else:
             self.is_playing = False
 
-    # infinite loop checking
+    # ! infinite loop checking
     async def play_music(self, ctx):
         if len(self.music_queue) > 0:
             self.is_playing = True
 
             m_url = self.music_queue[0][0]['source']
 
-            # try to connect to voice channel if you are not already connected
+            # ? try to connect to voice channel if you are not already connected
             if self.vc == None or not self.vc.is_connected():
                 self.vc = await self.music_queue[0][1].connect()
 
-                # in case we fail to connect
+                # ! in case we fail to connect
                 if self.vc == None:
                     await ctx.send("Could not connect to the voice channel")
                     return
             else:
                 await self.vc.move_to(self.music_queue[0][1])
 
-            # remove the first element as you are currently playing it
+            # ! remove the first element as you are currently playing it
             self.music_queue.pop(0)
 
             self.vc.play(discord.FFmpegPCMAudio(
@@ -83,7 +83,7 @@ class Music(commands.Cog):
 
         voice_channel = interaction.user.voice.channel
         if voice_channel is None:
-            # you need to be connected so that the bot knows where to go
+            # ! you need to be connected so that the bot knows where to go
             await interaction.response.send_message("Connect to a voice channel!")
         elif self.is_paused:
             self.vc.resume()
@@ -124,14 +124,14 @@ class Music(commands.Cog):
     async def skip(self, interaction: discord.Interaction):
         if self.vc != None and self.vc:
             self.vc.stop()
-            # try to play next in the queue if it exists
+            # ! try to play next in the queue if it exists
             await self.play_music(interaction)
 
     @app_commands.command(name="queue", description="Displays the current songs in queue")
     async def queue(self, interaction: discord.Interaction):
         retval = ""
         for i in range(0, len(self.music_queue)):
-            # display a max of 5 songs in the current queue
+            # ? display a max of 5 songs in the current queue
             if (i > 4):
                 break
             retval += self.music_queue[i][0]['title'] + "\n"
