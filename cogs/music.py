@@ -5,8 +5,8 @@ from youtube_dl import YoutubeDL
 
 
 class Music(commands.Cog):
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot):
+        self.bot = bot
 
         # * all the music related stuff
         self.is_playing = False
@@ -102,23 +102,18 @@ class Music(commands.Cog):
                 if self.is_playing == False:
                     await self.play_music(interaction)  # here is a bug
 
-    @app_commands.command(name="pause", description="Pauses the current song being played")
-    async def pause(self, interaction: discord.Interaction):
+    @app_commands.command(name="resume_or_pause", description="Pauses the current song being played")
+    async def resume_or_pause(self, interaction: discord.Interaction):
         if self.is_playing:
             self.is_playing = False
             self.is_paused = True
             self.vc.pause()
+            await interaction.response.send_message("Song paused")
         elif self.is_paused:
             self.is_paused = False
             self.is_playing = True
             self.vc.resume()
-
-    @app_commands.command(name="resume", description="Resumes playing with the discord bot")
-    async def resume(self, interaction: discord.Interaction):
-        if self.is_paused:
-            self.is_paused = False
-            self.is_playing = True
-            self.vc.resume()
+            await interaction.response.send_message("Song resumed")
 
     @app_commands.command(name="skip", description="Skips the current song being played")
     async def skip(self, interaction: discord.Interaction):
@@ -126,6 +121,7 @@ class Music(commands.Cog):
             self.vc.stop()
             # ! try to play next in the queue if it exists
             await self.play_music(interaction)
+            await interaction.response.send_message("Song skipped")
 
     @app_commands.command(name="queue", description="Displays the current songs in queue")
     async def queue(self, interaction: discord.Interaction):
@@ -142,18 +138,19 @@ class Music(commands.Cog):
             await interaction.response.send_message("No music in queue")
 
     @app_commands.command(name="queue_clear", description="Stops the music and clears the queue")
-    async def clear(self, interaction: discord.Interaction):
+    async def queue_clear(self, interaction: discord.Interaction):
         if self.vc != None and self.is_playing:
             self.vc.stop()
         self.music_queue = []
         await interaction.response.send_message("Music queue cleared")
 
-    @app_commands.command(name="leave", description="Kick the bot from VC")
-    async def dc(self, interaction: discord.Interaction):
+    @app_commands.command(name="leave", description="Kick the bot from voice chat")
+    async def leave(self, interaction: discord.Interaction):
         self.is_playing = False
         self.is_paused = False
         await self.vc.disconnect()
+        await interaction.response.send_message("Bot left the voice chat")
 
 
-async def setup(client):
-    await client.add_cog(Music(client))
+async def setup(bot):
+    await bot.add_cog(Music(bot))
