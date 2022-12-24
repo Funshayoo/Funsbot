@@ -9,8 +9,8 @@ flip_var = ['heads!', 'tails!']
 
 class Fun(commands.Cog):
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot):
+        self.bot = bot
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -33,5 +33,5 @@ class Fun(commands.Cog):
         await interaction.response.send_message('Kocham manho <:PepeHappy:1007638220131024997>')
 
 
-async def setup(client):
-    await client.add_cog(Fun(client))
+async def setup(bot):
+    await bot.add_cog(Fun(bot))

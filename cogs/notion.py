@@ -9,8 +9,8 @@ client = Client(auth='secret_3yTWYhfWs8LbI08eE8Pu5u1DYNbZy5SK9BYUxzqSXcoN')
 
 
 class Notion(commands.Cog):
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot):
+        self.bot = bot
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -22,5 +22,5 @@ class Notion(commands.Cog):
         await interaction.response.send_message('test')
 
 
-async def setup(client):
-    await client.add_cog(Notion(client))
+async def setup(bot):
+    await bot.add_cog(Notion(bot))

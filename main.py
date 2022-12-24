@@ -12,6 +12,7 @@ tree = app_commands.CommandTree(client)
 bot = commands.Bot(command_prefix='$', intents=intents, help_command=None)
 
 load_dotenv()
+token = os.getenv("DISCORD_TOKEN")
 
 
 async def load_extensions():
@@ -77,5 +78,5 @@ async def help(interaction: discord.Interaction):
 async def main():
     async with bot:
         await load_extensions()
-        await bot.start(os.getenv("DISCORD_TOKEN"))
+        await bot.start(token)
 asyncio.run(main())

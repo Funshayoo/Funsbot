@@ -6,8 +6,8 @@ from discord import app_commands
 
 class Mod(commands.Cog):
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot):
+        self.bot = bot
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -67,7 +67,7 @@ class Mod(commands.Cog):
     @app_commands.default_permissions(administrator=True)
     @app_commands.describe(title="What title", message="What to say")
     async def announce(self, interaction: discord.Interaction, title: str, message: str):
-        channel = self.client.get_channel(1053696319325229087)
+        channel = self.bot.get_channel(1053696319325229087)
         guild = interaction.guild
 
         if message == None:
@@ -80,5 +80,5 @@ class Mod(commands.Cog):
             await channel.send(guild.default_role)
 
 
-async def setup(client):
-    await client.add_cog(Mod(client))
+async def setup(bot):
+    await bot.add_cog(Mod(bot))
