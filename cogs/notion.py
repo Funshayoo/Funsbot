@@ -16,6 +16,7 @@ class Notion(commands.Cog):
     async def on_ready(self):
         print('Loaded notion.py!')
 
+    #   TODO finish command + add comments
     @app_commands.command(name="zadania", description="Prints the tomorow homework from notion database")
     @app_commands.checks.has_role("8c")
     async def clear(self, interaction: discord.Interaction):

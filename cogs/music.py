@@ -3,6 +3,8 @@ from discord.ext import commands
 from discord import app_commands
 from youtube_dl import YoutubeDL
 
+# TODO add embeds response messages (don't forget to add colors), maybe some buttons
+
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -12,7 +14,7 @@ class Music(commands.Cog):
         self.is_playing = False
         self.is_paused = False
 
-        # * 2d array containing [song, channel]
+        # ! 2d array containing [song, channel]
         self.music_queue = []
         self.YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True'}
         self.FFMPEG_OPTIONS = {
@@ -77,9 +79,9 @@ class Music(commands.Cog):
         print('Loaded music.py!')
 
     @app_commands.command(name="play", description="Plays a selected song from youtube")
-    @app_commands.describe(song_name="What to play")
-    async def play(self, interaction: discord.Interaction, song_name: str):
-        query = " ".join(song_name)
+    @app_commands.describe(song="What to play")
+    async def play(self, interaction: discord.Interaction, song: str):
+        query = " ".join(song)
 
         voice_channel = interaction.user.voice.channel
         if voice_channel is None:
@@ -93,14 +95,10 @@ class Music(commands.Cog):
                 await interaction.response.send_message("Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format.")
             else:
                 await interaction.response.send_message("Song added to the queue")
-                # @app_commands.command()
-                # async def join(self, interaction: discord.Interaction):
-                # channel = interaction.user.voice.channel
-                # await channel.connect()
                 self.music_queue.append([song, voice_channel])
 
                 if self.is_playing == False:
-                    await self.play_music(interaction)  # here is a bug
+                    await self.play_music(interaction)
 
     @app_commands.command(name="resume_or_pause", description="Pauses the current song being played")
     async def resume_or_pause(self, interaction: discord.Interaction):

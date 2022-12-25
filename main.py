@@ -6,13 +6,16 @@ import random
 import os
 from dotenv import load_dotenv
 
+# * all needed variables
 intents = discord.Intents().all()
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
-bot = commands.Bot(command_prefix='$', intents=intents, help_command=None)
+bot = commands.Bot(command_prefix='/', intents=intents, help_command=None)
 
 load_dotenv()
 token = os.getenv("DISCORD_TOKEN")
+
+color = 0x2F3136
 
 
 async def load_extensions():
@@ -21,37 +24,42 @@ async def load_extensions():
             # ? cut off the .py from the file name
             await bot.load_extension(f'cogs.{filename[:-3]}')
 
-# ? changes bot activity to $help
+# ? when bot is ready
 
 
 @bot.event
 async def on_ready():
+    # ? change bot activity
     await bot.change_presence(activity=discord.Game(name='/help'))
-    print('Bot is ready!')
+    # ? print message
+    print(f'Logged in as: {bot.user}')
+    print(f'Discord version: {discord.__version__} ')
+    # ! sync all commands
     try:
-        synced = await bot.tree.sync()
+        await bot.tree.sync()
     except Exception as e:
         print(e)
 
-# ? on join message + add role
+# ? on member join
 
 
 @bot.event
 async def on_member_join(member):
     channel = bot.get_channel(1007632094899490886)
     embed = discord.Embed(
-        title='Siemanoo!!!',
-        description=f'{member.mention} <:pepewow:1007638216033194064>')
+        title='Siemanoo!!!', description=f'{member.mention} <:pepewow:1007638216033194064>', color=color)
+    # ? send welcome message + add user role
     await channel.send(embed=embed)
     role = discord.utils.get(member.guild.roles, name='Paczka')
     await member.add_roles(role)
 
 
-# ? Checks for the messages
+# ? on message event
 
 
 @bot.event
 async def on_message(message):
+    # ? funni gówno joke
     answ = ['gówno jeden zero', 'jajco', 'chujów sto']
     qstn = ['co', '?', 'co?', 'Co', 'Co?']
 
@@ -60,7 +68,7 @@ async def on_message(message):
     elif message.content in qstn:
         await message.channel.send(random.choice(answ))
 
-    #! allow using commands
+    #! allow using prefix commands
     await bot.process_commands(message)
 
 # ? help command
@@ -69,7 +77,7 @@ async def on_message(message):
 @bot.tree.command(name="help", description="use this command to get some help")
 async def help(interaction: discord.Interaction):
     embed = discord.Embed(
-        title="", description="You can use commands by typing /**command**", color=0xffffff)
+        description="You can use commands by typing /**command**", color=color)
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 # ! starts the bot
