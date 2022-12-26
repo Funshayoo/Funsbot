@@ -3,7 +3,8 @@ from discord.ext import commands
 from discord import app_commands
 from youtube_dl import YoutubeDL
 
-# TODO add embeds response messages (don't forget to add colors), maybe some buttons
+# TODO add some buttons, and now playing
+color = 0x2F3136
 
 
 class Music(commands.Cog):
@@ -49,7 +50,7 @@ class Music(commands.Cog):
             self.is_playing = False
 
     # ! infinite loop checking
-    async def play_music(self, ctx):
+    async def play_music(self, interaction: discord.Interaction):
         if len(self.music_queue) > 0:
             self.is_playing = True
 
@@ -61,7 +62,9 @@ class Music(commands.Cog):
 
                 # ! in case we fail to connect
                 if self.vc == None:
-                    await ctx.send("Could not connect to the voice channel")
+                    embed = discord.Embed(
+                        title="", description="Could not connect to voice channel", color=color)
+                    await interaction.response.send_message(embed=embed)
                     return
             else:
                 await self.vc.move_to(self.music_queue[0][1])
@@ -86,32 +89,42 @@ class Music(commands.Cog):
         voice_channel = interaction.user.voice.channel
         if voice_channel is None:
             # ! you need to be connected so that the bot knows where to go
-            await interaction.response.send_message("Connect to a voice channel!")
+            embed = discord.Embed(
+                title="", description="Connect to the voice channel", color=color)
+            await interaction.response.send_message(embed=embed)
         elif self.is_paused:
             self.vc.resume()
         else:
             song = self.search_yt(query)
             if type(song) == type(True):
-                await interaction.response.send_message("Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format.")
+                embed = discord.Embed(
+                    title="", description="Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format", color=color)
+                await interaction.response.send_message(embed=embed)
             else:
-                await interaction.response.send_message("Song added to the queue")
+                embed = discord.Embed(
+                    title="", description="Song added to the queue", color=color)
+                await interaction.response.send_message(embed=embed)
                 self.music_queue.append([song, voice_channel])
 
                 if self.is_playing == False:
                     await self.play_music(interaction)
 
-    @app_commands.command(name="resume_or_pause", description="Pauses the current song being played")
+    @app_commands.command(name="pause_on_off", description="Pauses the current song being played")
     async def resume_or_pause(self, interaction: discord.Interaction):
         if self.is_playing:
             self.is_playing = False
             self.is_paused = True
             self.vc.pause()
-            await interaction.response.send_message("Song paused")
+            embed = discord.Embed(
+                title="", description="Pause on", color=color)
+            await interaction.response.send_message(embed=embed)
         elif self.is_paused:
             self.is_paused = False
             self.is_playing = True
             self.vc.resume()
-            await interaction.response.send_message("Song resumed")
+            embed = discord.Embed(
+                title="", description="Pause off", color=color)
+            await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="skip", description="Skips the current song being played")
     async def skip(self, interaction: discord.Interaction):
@@ -119,7 +132,9 @@ class Music(commands.Cog):
             self.vc.stop()
             # ! try to play next in the queue if it exists
             await self.play_music(interaction)
-            await interaction.response.send_message("Song skipped")
+            embed = discord.Embed(
+                title="", description="Song skipped", color=color)
+            await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="queue", description="Displays the current songs in queue")
     async def queue(self, interaction: discord.Interaction):
@@ -131,23 +146,31 @@ class Music(commands.Cog):
             retval += self.music_queue[i][0]['title'] + "\n"
 
         if retval != "":
-            await interaction.response.send_message(retval)
+            embed = discord.Embed(
+                title="Queue:", description=retval, color=color)
+            await interaction.response.send_message(embed=embed)
         else:
-            await interaction.response.send_message("No music in queue")
+            embed = discord.Embed(
+                title="", description="No music in queue", color=color)
+            await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="queue_clear", description="Stops the music and clears the queue")
     async def queue_clear(self, interaction: discord.Interaction):
         if self.vc != None and self.is_playing:
             self.vc.stop()
         self.music_queue = []
-        await interaction.response.send_message("Music queue cleared")
+        embed = discord.Embed(
+            title="", description="Music queue cleared", color=color)
+        await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="leave", description="Kick the bot from voice chat")
     async def leave(self, interaction: discord.Interaction):
         self.is_playing = False
         self.is_paused = False
         await self.vc.disconnect()
-        await interaction.response.send_message("Bot left the voice chat")
+        embed = discord.Embed(
+            title="", description="Bot left the voice chat", color=color)
+        await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot):
