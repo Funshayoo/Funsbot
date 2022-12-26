@@ -22,7 +22,7 @@ class Notion(commands.Cog):
     @app_commands.command(name="zadania", description="Prints the tomorow homework from notion database")
     @app_commands.checks.has_role("8c")
     async def zadania(self, interaction: discord.Interaction):
-        embed = discord.Embed(title="Comming soon",
+        embed = discord.Embed(title="Comming soon :eyes:",
                               description="", color=color)
         await interaction.response.send_message(embed=embed)
 
