@@ -8,9 +8,12 @@ from dotenv import load_dotenv
 
 # * all needed variables
 intents = discord.Intents().all()
-client = discord.Client(intents=intents)
-tree = app_commands.CommandTree(client)
 bot = commands.Bot(command_prefix='/', intents=intents, help_command=None)
+tree = bot.tree
+# ! in case something will fuck up in the future
+# client = discord.Client(intents=intents)
+# tree = app_commands.CommandTree(client)
+
 
 load_dotenv()
 token = os.getenv("DISCORD_TOKEN")
@@ -36,7 +39,8 @@ async def on_ready():
     print(f'Discord version: {discord.__version__} ')
     # ! sync all commands
     try:
-        await bot.tree.sync()
+        guild_id = 1007631720155205632
+        await tree.sync(guild=discord.Object(guild_id))
     except Exception as e:
         print(e)
 
@@ -74,7 +78,7 @@ async def on_message(message):
 # ? help command
 
 
-@bot.tree.command(name="help", description="use this command to get some help")
+@tree.command(name="help", description="use this command to get some help")
 async def help(interaction: discord.Interaction):
     embed = discord.Embed(
         description="You can use commands by typing /**command**", color=color)
