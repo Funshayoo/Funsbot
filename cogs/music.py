@@ -22,6 +22,7 @@ class Music(commands.Cog):
             'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
         self.vc = None
+        self.nowplayingsong = ""
 
     # ? searching the item on youtube
     def search_yt(self, item):
@@ -70,6 +71,7 @@ class Music(commands.Cog):
                 await self.vc.move_to(self.music_queue[0][1])
 
             # ! remove the first element as you are currently playing it
+            self.nowplayingsong = self.music_queue[0][0]['title']
             self.music_queue.pop(0)
 
             self.vc.play(discord.FFmpegPCMAudio(
@@ -179,11 +181,9 @@ class Music(commands.Cog):
                 title="", description="No song is playing", color=color)
             await interaction.response.send_message(embed=embed)
         # TODO fix now playing song
-        # now_playing_song = ""
-        # now_playing_song = self.music_queue[0][0]['title'] + "\n"
-        # embed = discord.Embed(
-        #     title="Now Playing:", description=now_playing_song, color=color)
-        # await interaction.response.send_message(embed=embed)
+        embed = discord.Embed(
+            title="Now Playing:", description=self.nowplayingsong, color=color)
+        await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot):
