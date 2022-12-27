@@ -180,7 +180,6 @@ class Music(commands.Cog):
             embed = discord.Embed(
                 title="", description="No song is playing", color=color)
             await interaction.response.send_message(embed=embed)
-        # TODO fix now playing song
         embed = discord.Embed(
             title="Now Playing:", description=self.nowplayingsong, color=color)
         await interaction.response.send_message(embed=embed)
