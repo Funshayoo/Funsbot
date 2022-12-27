@@ -2,4 +2,21 @@ discord.py==2.1.0
 notion_client==2.0.0
 python-dotenv==0.21.0
 youtube_dl==2021.12.17
-#python3 -m  pipreqs.pipreqs .
+ffmpeg==1.4
+idna==3.3
+isort==5.8.0
+lazy-object-proxy==1.6.0
+mccabe==0.6.1
+multidict==6.0.2
+pycparser==2.20
+pylint==2.7.2
+pymongo==3.12.1
+PyNaCl==1.5.0
+pyspnego==0.1.5
+six==1.15.0
+smbprotocol==1.5.0
+toml==0.10.2
+typing_extensions==4.1.1
+wrapt==1.12.1
+yarl==1.7.2
+#made with python3 -m  pipreqs.pipreqs .

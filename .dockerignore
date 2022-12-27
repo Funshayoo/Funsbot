@@ -1,2 +1,4 @@
 cogs/__pycache__
-/.vscode
+.vscode
+.gitignore
+.README.md
