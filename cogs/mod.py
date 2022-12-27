@@ -4,8 +4,6 @@ from discord.ext.commands import has_permissions
 from discord import app_commands
 import asyncio
 
-# TODO comments
-
 color = 0x2F3136
 
 
