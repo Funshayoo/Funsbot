@@ -86,12 +86,12 @@ class Music(commands.Cog):
     async def play(self, interaction: discord.Interaction, song: str):
         query = " ".join(song)
 
-        voice_channel = interaction.user.voice.channel
-        if voice_channel is None:
+        user_voice = interaction.user.voice
+        if user_voice is None:
             # ! you need to be connected so that the bot knows where to go
             embed = discord.Embed(
                 title="", description="Connect to the voice channel", color=color)
-            await interaction.response.send_message(embed=embed)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
         elif self.is_paused:
             self.vc.resume()
         else:
@@ -104,7 +104,7 @@ class Music(commands.Cog):
                 embed = discord.Embed(
                     title="", description="Song added to the queue", color=color)
                 await interaction.response.send_message(embed=embed)
-                self.music_queue.append([song, voice_channel])
+                self.music_queue.append([song, user_voice.channel])
 
                 if self.is_playing == False:
                     await self.play_music(interaction)
@@ -171,6 +171,19 @@ class Music(commands.Cog):
         embed = discord.Embed(
             title="", description="Bot left the voice chat", color=color)
         await interaction.response.send_message(embed=embed)
+
+    @app_commands.command(name="nowplaying", description="Prints the current song name")
+    async def nowplaying(self, interaction: discord.Interaction):
+        if interaction.user.voice is None or self.is_playing is False:
+            embed = discord.Embed(
+                title="", description="No song is playing", color=color)
+            await interaction.response.send_message(embed=embed)
+        # TODO fix now playing song
+        # now_playing_song = ""
+        # now_playing_song = self.music_queue[0][0]['title'] + "\n"
+        # embed = discord.Embed(
+        #     title="Now Playing:", description=now_playing_song, color=color)
+        # await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot):
