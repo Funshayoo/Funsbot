@@ -1,6 +1,9 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
+import random
+
+dictionary = set(word.strip() for word in open("/wordle_src/wordle_words.txt"))
 
 
 class Wordle(commands.Cog):
