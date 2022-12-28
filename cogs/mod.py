@@ -63,11 +63,15 @@ class Mod(commands.Cog):
         await member.remove_roles(mutedRole)
         await interaction.response.send_message(embed=embed)
 
-    @ app_commands.command(name="clear", description="Clear the chat")
-    @ app_commands.default_permissions(administrator=True)
-    @ app_commands.describe(amount="How much messages")
+    @app_commands.command(name="clear", description="Clear the chat")
+    @app_commands.default_permissions(administrator=True)
+    @app_commands.describe(amount="How much messages")
     async def clear(self, interaction: discord.Interaction, amount: int):
+        await interaction.response.defer(thinking=True)
         await interaction.channel.purge(limit=amount)
+        embed = discord.Embed(
+            title="", description=f'Cleared {amount} message(s)', color=self.color)
+        await interaction.channel.send(embed=embed)
 
     # ? announcements command
     @ app_commands.command(name="announce", description="Send a message to announcements channel")
