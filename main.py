@@ -42,8 +42,7 @@ async def on_ready():
     print(f'Discord version: {discord.__version__} ')
     # ! sync all commands
     try:
-        guild_id = 1007631720155205632
-        await tree.sync(guild=discord.Object(guild_id))
+        await tree.sync()
     except Exception as e:
         print(e)
 
