@@ -84,6 +84,7 @@ class Music(commands.Cog):
         print('Loaded music.py!')
 
     @app_commands.command(name="play", description="Plays a selected song from youtube")
+    @app_commands.guild_only()
     @app_commands.describe(song="What to play")
     async def play(self, interaction: discord.Interaction, song: str):
         query = " ".join(song)
@@ -112,6 +113,7 @@ class Music(commands.Cog):
                     await self.play_music(interaction)
 
     @app_commands.command(name="pause_on_off", description="Pauses the current song being played")
+    @app_commands.guild_only()
     async def resume_or_pause(self, interaction: discord.Interaction):
         if self.is_playing:
             self.is_playing = False
@@ -129,6 +131,7 @@ class Music(commands.Cog):
             await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="skip", description="Skips the current song being played")
+    @app_commands.guild_only()
     async def skip(self, interaction: discord.Interaction):
         if self.vc != None and self.vc:
             self.vc.stop()
@@ -139,6 +142,7 @@ class Music(commands.Cog):
             await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="queue", description="Displays the current songs in queue")
+    @app_commands.guild_only()
     async def queue(self, interaction: discord.Interaction):
         retval = ""
         for i in range(0, len(self.music_queue)):
@@ -157,6 +161,7 @@ class Music(commands.Cog):
             await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="queue_clear", description="Stops the music and clears the queue")
+    @app_commands.guild_only()
     async def queue_clear(self, interaction: discord.Interaction):
         if self.vc != None and self.is_playing:
             self.vc.stop()
@@ -166,6 +171,7 @@ class Music(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="leave", description="Kick the bot from voice chat")
+    @app_commands.guild_only()
     async def leave(self, interaction: discord.Interaction):
         self.is_playing = False
         self.is_paused = False
@@ -175,6 +181,7 @@ class Music(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="nowplaying", description="Prints the current song name")
+    @app_commands.guild_only()
     async def nowplaying(self, interaction: discord.Interaction):
         if interaction.user.voice is None or self.is_playing is False:
             embed = discord.Embed(

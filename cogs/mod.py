@@ -17,6 +17,7 @@ class Mod(commands.Cog):
 
     # ? kick command
     @app_commands.command(name="kick", description="Kick the user")
+    @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
     @app_commands.describe(reason="For what reason")
     async def kick(self, interaction: discord.Interaction, member: discord.Member, reason: str):
@@ -27,6 +28,7 @@ class Mod(commands.Cog):
 
     # ? ban command
     @app_commands.command(name="ban", description="Ban the user")
+    @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
     @app_commands.describe(reason="For what reason")
     async def ban(self, interaction: discord.Interaction, member: discord.Member, reason: str):
@@ -37,6 +39,7 @@ class Mod(commands.Cog):
 
     # ? mute command
     @app_commands.command(name="mute", description="Mute the user")
+    @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
     @app_commands.describe(reason="For what reason")
     async def mute(self, interaction: discord.Interaction, member: discord.Member, reason: str):
@@ -52,8 +55,9 @@ class Mod(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     # ? unmute comand
-    @ app_commands.command(name="unmute", description="Unmute the user")
-    @ app_commands.default_permissions(administrator=True)
+    @app_commands.command(name="unmute", description="Unmute the user")
+    @app_commands.guild_only()
+    @app_commands.default_permissions(administrator=True)
     async def unmute(self, interaction: discord.Interaction, member: discord.Member):
         guild = interaction.guild
         mutedRole = discord.utils.get(guild.roles, name='Muted')
@@ -64,6 +68,7 @@ class Mod(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="clear", description="Clear the chat")
+    @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
     @app_commands.describe(amount="How much messages")
     async def clear(self, interaction: discord.Interaction, amount: int):
@@ -74,9 +79,10 @@ class Mod(commands.Cog):
         await interaction.channel.send(embed=embed)
 
     # ? announcements command
-    @ app_commands.command(name="announce", description="Send a message to announcements channel")
-    @ app_commands.default_permissions(administrator=True)
-    @ app_commands.describe(title="What title", message="What to say")
+    @app_commands.command(name="announce", description="Send a message to announcements channel")
+    @app_commands.guild_only()
+    @app_commands.default_permissions(administrator=True)
+    @app_commands.describe(title="What title", message="What to say")
     async def announce(self, interaction: discord.Interaction, title: str, message: str):
         channel = self.bot.get_channel(1053696319325229087)
         guild = interaction.guild
