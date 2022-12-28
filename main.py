@@ -66,13 +66,15 @@ async def on_member_join(member):
 @bot.event
 async def on_message(message):
     # ? funni gówno joke
-    answ = ['gówno jeden zero', 'jajco', 'chujów sto']
-    qstn = ['co', 'co?', 'Co', 'Co?']
+    answer_array = ['gówno jeden zero', 'jajco', 'chujów sto']
+    co_array = ['co', 'co?']
 
     if (message.author == bot):
         return
-    elif message.content in qstn:
-        await message.channel.send(random.choice(answ))
+    elif message.content.lower() in co_array:
+        embed = discord.Embed(title="", description=random.choice(
+            answer_array), color=bot.embed_color)
+        await message.reply(embed=embed)
 
     #! allow using prefix commands
     await bot.process_commands(message)
