@@ -6,19 +6,22 @@ import random
 import os
 from dotenv import load_dotenv
 
+
+class Funsbot(commands.AutoShardedBot):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.embed_color = 0x2F3136
+
+
 # * all needed variables
-intents = discord.Intents().all()
-bot = commands.Bot(command_prefix='/', intents=intents, help_command=None)
-tree = bot.tree
-# ! in case something will fuck up in the future
-# client = discord.Client(intents=intents)
-# tree = app_commands.CommandTree(client)
-
-
 load_dotenv()
 token = os.getenv("DISCORD_TOKEN")
 
-color = 0x2F3136
+intents = discord.Intents().all()
+bot = Funsbot(command_prefix="/", intents=intents, help_command=None)
+tree = bot.tree
+
+color = bot.embed_color
 
 
 async def load_extensions():
