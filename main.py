@@ -67,7 +67,7 @@ async def on_member_join(member):
 async def on_message(message):
     # ? funni gówno joke
     answ = ['gówno jeden zero', 'jajco', 'chujów sto']
-    qstn = ['co', '?', 'co?', 'Co', 'Co?']
+    qstn = ['co', 'co?', 'Co', 'Co?']
 
     if (message.author == bot):
         return
