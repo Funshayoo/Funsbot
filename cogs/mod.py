@@ -4,13 +4,12 @@ from discord.ext.commands import has_permissions
 from discord import app_commands
 import asyncio
 
-color = 0x2F3136
-
 
 class Mod(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.color = self.bot.embed_color
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -22,7 +21,7 @@ class Mod(commands.Cog):
     @app_commands.describe(reason="For what reason")
     async def kick(self, interaction: discord.Interaction, member: discord.Member, reason: str):
         embed = discord.Embed(
-            title="", description=f'Kicked {member.mention} for reason {reason}', color=color)
+            title="", description=f'Kicked {member.mention} for reason {reason}', color=self.color)
         await interaction.response.send_message(embed=embed)
         await member.kick(reason=reason)
 
@@ -32,7 +31,7 @@ class Mod(commands.Cog):
     @app_commands.describe(reason="For what reason")
     async def ban(self, interaction: discord.Interaction, member: discord.Member, reason: str):
         embed = discord.Embed(
-            title="", description=f'Banned {member.mention} for reason {reason}', color=color)
+            title="", description=f'Banned {member.mention} for reason {reason}', color=self.color)
         await interaction.response.send_message(embed=embed)
         await member.ban(reason=reason)
 
@@ -44,7 +43,7 @@ class Mod(commands.Cog):
         guild = interaction.guild
         mutedRole = discord.utils.get(guild.roles, name='Muted')
         embed = discord.Embed(
-            title="", description=f'Muted {member.mention} for reason {reason}', color=color)
+            title="", description=f'Muted {member.mention} for reason {reason}', color=self.color)
 
         if not mutedRole:
             mutedRole = await guild.create_role(name='Muted')
@@ -59,7 +58,7 @@ class Mod(commands.Cog):
         guild = interaction.guild
         mutedRole = discord.utils.get(guild.roles, name='Muted')
         embed = discord.Embed(
-            title="", description=f'Unmuted {member.mention}', color=color)
+            title="", description=f'Unmuted {member.mention}', color=self.color)
 
         await member.remove_roles(mutedRole)
         await interaction.response.send_message(embed=embed)
@@ -82,7 +81,7 @@ class Mod(commands.Cog):
             return
         else:
             embed = discord.Embed(
-                title=title, description=message, color=color)
+                title=title, description=message, color=self.color)
             await channel.send(embed=embed)
             await channel.send(guild.default_role)
 
