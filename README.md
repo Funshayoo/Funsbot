@@ -44,4 +44,3 @@ Released under the [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0.en.html) li
 
 - raspberry pi hosting
 - wordle
-- notion function
