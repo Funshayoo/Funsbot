@@ -3,7 +3,13 @@ from discord.ext import commands
 from discord import app_commands
 import random
 
-dictionary = set(word.strip() for word in open("/wordle_src/wordle_words.txt"))
+dictionary = open("./wordle_src/wordle_words.txt")
+
+
+async def get_random_word():
+    with open("./wordle_src/wordle_words.txt") as f:
+        wordle_word = f.read().splitlines()
+        return random.choice(wordle_word)
 
 
 class Wordle(commands.Cog):
@@ -18,8 +24,9 @@ class Wordle(commands.Cog):
     # TODO wordle command
     @app_commands.command(name="wordle", description="Play a game of wordle")
     async def wordle(self, interaction: discord.Interaction):
+        word = await get_random_word()
         embed = discord.Embed(title="Comming soon :eyes:",
-                              description="", color=self.color)
+                              description=f"For now here's your word {word}", color=self.color)
         await interaction.response.send_message(embed=embed)
 
 
