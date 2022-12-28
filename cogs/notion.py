@@ -1,18 +1,20 @@
 import discord
+import os
 from discord.ext import commands
+from dotenv import load_dotenv
 from notion_client import Client
 from discord.ext.commands import has_permissions
 from discord import app_commands
 
-client = Client(auth='secret_3yTWYhfWs8LbI08eE8Pu5u1DYNbZy5SK9BYUxzqSXcoN')
+load_dotenv()
+notion_client = os.getenv("NOTION_TOKEN")
 # database id = e63f878470b44afcb35ae40ef4a2b5f8
-
-color = 0x2F3136
 
 
 class Notion(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.color = self.bot.embed_color
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -23,7 +25,7 @@ class Notion(commands.Cog):
     @app_commands.checks.has_role("8c")
     async def zadania(self, interaction: discord.Interaction):
         embed = discord.Embed(title="Comming soon :eyes:",
-                              description="", color=color)
+                              description="", color=self.color)
         await interaction.response.send_message(embed=embed)
 
 
