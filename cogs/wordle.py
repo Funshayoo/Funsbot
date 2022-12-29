@@ -26,7 +26,7 @@ class Wordle(commands.Cog):
     async def wordle(self, interaction: discord.Interaction):
         word = await get_random_word()
         embed = discord.Embed(title="Comming soon :eyes:",
-                              description=f"For now here's your word {word}", color=self.color)
+                              description=f"For now here's your word: **{word}**", color=self.color)
         await interaction.response.send_message(embed=embed)
 
 
