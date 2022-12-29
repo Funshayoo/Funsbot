@@ -21,8 +21,8 @@ class Notion(commands.Cog):
         print('Loaded notion.py!')
 
     # TODO finish command + add comments
-    @app_commands.command(name="zadania", description="Prints the tomorow homework from notion database")
-    @app_commands.checks.has_role("8c")
+    @app_commands.command(name="zadania", description="See what is for tommorow homework")
+    @ app_commands.checks.has_role("8c")
     async def zadania(self, interaction: discord.Interaction):
         embed = discord.Embed(title="Comming soon :eyes:",
                               description="", color=self.color)
