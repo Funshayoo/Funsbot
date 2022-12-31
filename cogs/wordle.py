@@ -38,6 +38,7 @@ class Wordle(commands.Cog):
             valid = True
 
         return valid
+    # TODO fix double letter bug
 
     async def generate_colored_word(self, guess: str, answer: str) -> str:
 
