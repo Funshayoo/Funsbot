@@ -78,6 +78,7 @@ class Wordle(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=True)
         else:
             if guess == self.answer:
+                self.is_playing = False
                 embed = discord.Embed(
                     title=f"{interaction.user} has won!", description=f"The answer was: **{self.answer}**", color=self.color)
                 await interaction.response.send_message(embed=embed)
