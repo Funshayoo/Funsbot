@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 import random
 import datetime
+import csv
 
 
 class Wordle(commands.Cog):
@@ -11,15 +12,14 @@ class Wordle(commands.Cog):
         self.color = self.bot.embed_color
         self.is_playing = False
         self.answer = ""
-        # TODO make this array more readable
         self.letter_colors = ["<:GreenSquare:1058105080630493244>",
                               "<:YellowSquare:1058105081637122069>", "<:ColorAbsent:1058105077073711144>"]
 
         # * all word dictionaries
         self.popular = open(
             "./wordle_src/wordle_words.txt").read().splitlines()
-        self.all_words = open(
-            "./wordle_src/dictionary.txt").read().splitlines()
+        self.all_words = set(word.strip()
+                             for word in open("./wordle_src/dictionary.txt"))
 
     async def get_random_word(self) -> str:
         return random.choice(self.popular)
@@ -27,6 +27,7 @@ class Wordle(commands.Cog):
     async def make_new_game(self) -> None:
         self.is_playing = True
         self.answer = await self.get_random_word()
+        print(self.answer)
 
     async def process_guess(self, word: str) -> bool:
         word = word.lower()
@@ -38,7 +39,6 @@ class Wordle(commands.Cog):
 
         return valid
 
-    # TODO finish this function
     async def generate_colored_word(self, guess: str, answer: str) -> str:
 
         colored_word = list([self.letter_colors[2] for letter in guess])
@@ -59,6 +59,9 @@ class Wordle(commands.Cog):
 
         return "".join(colored_word)
 
+    async def played_today(self) -> bool:
+        pass
+
     @ commands.Cog.listener()
     async def on_ready(self):
         print('Loaded wordle.py!')
@@ -75,7 +78,7 @@ class Wordle(commands.Cog):
         else:
             if guess == self.answer:
                 embed = discord.Embed(
-                    title="You won", description=f"The answer was: {self.answer}", color=self.color)
+                    title="You won!", description=f"The answer was: **{self.answer}**", color=self.color)
                 await interaction.response.send_message(embed=embed)
             else:
                 colored_word = await self.generate_colored_word(guess, self.answer)
