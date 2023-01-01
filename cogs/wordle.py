@@ -38,7 +38,6 @@ class Wordle(commands.Cog):
             valid = True
 
         return valid
-    # TODO fix double letter bug
 
     async def generate_colored_word(self, guess: str, answer: str) -> str:
 
@@ -55,8 +54,9 @@ class Wordle(commands.Cog):
         for i in range(len(guess_letters)):
             if guess_letters[i] is not None and guess_letters[i] in answer_letters:
                 colored_word[i] = self.letter_colors[1]
-                answer_letters[i] = None
-                guess_letters[i] = None
+                # answer_letters[i] = None
+                # guess_letters[i] = None
+                answer_letters[answer_letters.index(guess_letters[i])] = None
 
         return "".join(colored_word)
 
