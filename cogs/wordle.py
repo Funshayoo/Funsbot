@@ -33,9 +33,9 @@ class Wordle(commands.Cog):
         word = word.lower()
         if word in self.all_words:
             self.user_guess = word
-            valid = False
-        else:
             valid = True
+        else:
+            valid = False
 
         return valid
 
@@ -73,9 +73,9 @@ class Wordle(commands.Cog):
         if not self.is_playing:
             await self.make_new_game()
 
-        if await self.process_guess(guess):
+        if not await self.process_guess(guess):
             embed = discord.Embed(
-                title="", description="Your guess is valid", color=self.color)
+                title="", description="Your guess is invalid", color=self.color)
             await interaction.response.send_message(embed=embed, ephemeral=True)
         else:
             if guess == self.answer:
