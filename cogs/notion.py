@@ -8,7 +8,7 @@ from discord import app_commands
 
 load_dotenv()
 notion_client = os.getenv("NOTION_TOKEN")
-# database id = e63f878470b44afcb35ae40ef4a2b5f8
+database_id = os.getenv("NOTION_DATABASE")
 
 
 class Notion(commands.Cog):
