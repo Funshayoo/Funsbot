@@ -157,7 +157,7 @@ class Music(commands.Cog):
             await interaction.response.send_message(embed=embed)
         else:
             embed = discord.Embed(
-                title="", description="No music in queue", color=self.olor)
+                title="", description="No music in queue", color=self.color)
             await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="queue_clear", description="Stops the music and clears the queue")
