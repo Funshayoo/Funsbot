@@ -39,8 +39,3 @@ Join us on our [Official Discord Server](https://discord.gg/37Z3gS3jj5)!
 # License
 
 Released under the [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0.en.html) license.
-
-# TODO
-
-- raspberry pi hosting
-- wordle csv
