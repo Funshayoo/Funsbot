@@ -54,8 +54,6 @@ class Wordle(commands.Cog):
         for i in range(len(guess_letters)):
             if guess_letters[i] is not None and guess_letters[i] in answer_letters:
                 colored_word[i] = self.letter_colors[1]
-                # answer_letters[i] = None
-                # guess_letters[i] = None
                 answer_letters[answer_letters.index(guess_letters[i])] = None
 
         return "".join(colored_word)
@@ -81,7 +79,7 @@ class Wordle(commands.Cog):
             if guess == self.answer:
                 self.is_playing = False
                 embed = discord.Embed(
-                    title=f"{interaction.user} has won!", description=f"The answer was: **{self.answer}**", color=self.color)
+                    title=f"{interaction.user} guessed the word!", description=f"The answer was: **{self.answer}**", color=self.color)
                 await interaction.response.send_message(embed=embed)
             else:
                 colored_word = await self.generate_colored_word(guess, self.answer)
