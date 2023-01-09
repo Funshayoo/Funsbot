@@ -48,9 +48,6 @@ class Music(commands.Cog):
 
             self.vc.play(discord.FFmpegPCMAudio(
                 m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
-            self.vc.pause()
-            await asyncio.sleep(1)
-            self.vc.resume()
         else:
             self.is_playing = False
 
