@@ -15,6 +15,7 @@ class Music(commands.Cog):
         # * all the music related stuff
         self.is_playing = False
         self.is_paused = False
+        self.is_looped = False
 
         # ! 2d array containing [song, channel]
         self.music_queue = []
@@ -194,6 +195,27 @@ class Music(commands.Cog):
         embed = discord.Embed(
             title="Now Playing:", description=self.nowplayingsong, color=self.color)
         await interaction.response.send_message(embed=embed)
+
+    # TODO this command
+    @app_commands.command(name="loop", description="Loops the song")
+    @app_commands.guild_only()
+    async def loop(self, interaction: discord.Interaction):
+        user_voice = interaction.user.voice
+        if user_voice is None:
+            # ! you need to be connected so that the bot knows where to go
+            embed = discord.Embed(
+                title="", description="Connect to the voice channel", color=self.color)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+        else:
+            self.is_looped ^= True
+            if self.is_looped == False:
+                embed = discord.Embed(
+                    title="", description="Loop is now off", color=self.color)
+                await interaction.response.send_message(embed=embed)
+            else:
+                embed = discord.Embed(
+                    title="", description="Loop is now on", color=self.color)
+                await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot):
