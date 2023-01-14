@@ -20,10 +20,8 @@ class Mod(commands.Cog):
     @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
     @app_commands.describe(reason="For what reason")
-    async def kick(self, interaction: discord.Interaction, member: discord.Member, reason: str):
-        embed = discord.Embed(
-            title="", description=f'Kicked {member.mention} for reason {reason}', color=self.color)
-        await interaction.response.send_message(embed=embed)
+    async def kick(self, interaction: discord.Interaction, member: discord.Member, reason: str = None):
+        await self.bot.embed(interaction, f'Kicked {member.mention} for reason {reason}')
         await member.kick(reason=reason)
 
     # ? ban command
@@ -31,10 +29,8 @@ class Mod(commands.Cog):
     @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
     @app_commands.describe(reason="For what reason")
-    async def ban(self, interaction: discord.Interaction, member: discord.Member, reason: str):
-        embed = discord.Embed(
-            title="", description=f'Banned {member.mention} for reason {reason}', color=self.color)
-        await interaction.response.send_message(embed=embed)
+    async def ban(self, interaction: discord.Interaction, member: discord.Member, reason: str = None):
+        await self.bot.embed(interaction, f'Banned {member.mention} for reason {reason}')
         await member.ban(reason=reason)
 
     # ? mute command
@@ -42,17 +38,15 @@ class Mod(commands.Cog):
     @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
     @app_commands.describe(reason="For what reason")
-    async def mute(self, interaction: discord.Interaction, member: discord.Member, reason: str):
+    async def mute(self, interaction: discord.Interaction, member: discord.Member, reason: str = None):
         guild = interaction.guild
         mutedRole = discord.utils.get(guild.roles, name='Muted')
-        embed = discord.Embed(
-            title="", description=f'Muted {member.mention} for reason {reason}', color=self.color)
+        await self.bot.embed(interaction, f'Muted {member.mention} for reason {reason}')
 
         if not mutedRole:
             mutedRole = await guild.create_role(name='Muted')
 
         await member.add_roles(mutedRole, reason=reason)
-        await interaction.response.send_message(embed=embed)
 
     # ? unmute comand
     @app_commands.command(name="unmute", description="Unmute the user")
@@ -61,11 +55,8 @@ class Mod(commands.Cog):
     async def unmute(self, interaction: discord.Interaction, member: discord.Member):
         guild = interaction.guild
         mutedRole = discord.utils.get(guild.roles, name='Muted')
-        embed = discord.Embed(
-            title="", description=f'Unmuted {member.mention}', color=self.color)
-
+        await self.bot.embed(interaction, f'Unmuted {member.mention}')
         await member.remove_roles(mutedRole)
-        await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="clear", description="Clear the chat")
     @app_commands.guild_only()

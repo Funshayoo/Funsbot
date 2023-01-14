@@ -18,24 +18,18 @@ class Fun(commands.Cog):
     # ? flip command
     @app_commands.command(name="flip", description="Flip a coin")
     async def flip(self, interaction: discord.Interaction):
-        embed = discord.Embed(
-            title="", description=random.choice(self.flip_array), color=self.color)
-        await interaction.response.send_message(embed=embed)
+        await self.bot.embed(interaction, random.choice(self.flip_array))
 
     # ? bitches command
     @app_commands.command(name="bitches", description="Funni")
     async def bitches(self, interaction: discord.Interaction):
-        embed = discord.Embed(
-            title="", description="No bitches <:KEKW:1007719515620126852>", color=self.color)
-        await interaction.response.send_message(embed=embed)
+        await self.bot.embed(interaction, "No bitches <:KEKW:1007719515620126852>")
 
     # ? manho command
 
     @app_commands.command(name="manho", description="<3 manho")
     async def manho(self, interaction: discord.Interaction):
-        embed = discord.Embed(
-            description="Kocham manho <:PepeHappy:1007638220131024997>", color=self.color)
-        await interaction.response.send_message(embed=embed)
+        await self.bot.embed(interaction, "Kocham manho <:PepeHappy:1007638220131024997>")
 
 
 async def setup(bot):

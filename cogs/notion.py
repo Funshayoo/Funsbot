@@ -24,9 +24,7 @@ class Notion(commands.Cog):
     @app_commands.command(name="zadania", description="See what is for tommorow homework")
     @ app_commands.checks.has_role("8c")
     async def zadania(self, interaction: discord.Interaction):
-        embed = discord.Embed(title="Comming soon :eyes:",
-                              description="", color=self.color)
-        await interaction.response.send_message(embed=embed)
+        await self.bot.embed(interaction, "", title="Comming soon :eyes:")
 
 
 async def setup(bot):

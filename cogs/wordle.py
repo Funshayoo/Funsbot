@@ -72,27 +72,19 @@ class Wordle(commands.Cog):
             await self.make_new_game()
 
         if not await self.process_guess(guess):
-            embed = discord.Embed(
-                title="", description="Your guess is invalid", color=self.color)
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await self.bot.embed(interaction, "Your guess is invalid", ephemeral=False)
         else:
             if guess == self.answer:
                 self.is_playing = False
-                embed = discord.Embed(
-                    title=f"{interaction.user} guessed the word!", description=f"The answer was: **{self.answer}**", color=self.color)
-                await interaction.response.send_message(embed=embed)
+                await self.bot.embed(interaction, f"The answer was: **{self.answer}**", title=f"{interaction.user} guessed the word!")
             else:
                 colored_word = await self.generate_colored_word(guess, self.answer)
-                embed = discord.Embed(
-                    title="", description=f"{colored_word} {guess}", color=self.color)
-                await interaction.response.send_message(embed=embed)
+                await self.bot.embed(interaction, f"{colored_word} {guess}")
 
     #   TODO this command
     @ app_commands.command(name="wordle_stats", description="View your wordle stats")
     async def wordle_stats(self, interaction: discord.Interaction):
-        embed = discord.Embed(title="Comming soon :eyes:",
-                              description="", color=self.color)
-        await interaction.response.send_message(embed=embed)
+        await self.bot.embed(interaction, "", title="Comming soon :eyes:")
 
 
 async def setup(bot):
