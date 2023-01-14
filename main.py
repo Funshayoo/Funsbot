@@ -12,18 +12,14 @@ class Funsbot(commands.AutoShardedBot):
         super().__init__(*args, **kwargs)
         self.embed_color = 0x2F3136
 
-        # TODO finish this function
-        def embed(d: str, t: str = None, f: str = None):
-            embed = discord.Embed(
-                description=d,
-                color=self.embed_color,
-            )
-            if t is not None:
-                embed.title = t
-            if f is not None:
-                embed.set_footer(text=f)
-
-            return embed
+    def embed(self, description: str, title: str = None, footer: str = None) -> discord.Embed:
+        embed = discord.Embed(
+            description=description, color=self.embed_color)
+        if title is not None:
+            embed.title = title
+        if footer is not None:
+            embed.set_footer = footer
+        return embed
 
 
 # * all needed variables
@@ -107,8 +103,7 @@ async def on_message(message):
 
 @tree.command(name="help", description="use this command to get some help")
 async def help(interaction: discord.Interaction):
-    embed = discord.Embed(
-        description="You can use commands by typing /**command**", color=color)
+    embed = bot.embed("You can use commands by typing /**command**")
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 # ! starts the bot
