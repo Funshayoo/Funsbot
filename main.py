@@ -12,6 +12,19 @@ class Funsbot(commands.AutoShardedBot):
         super().__init__(*args, **kwargs)
         self.embed_color = 0x2F3136
 
+        # TODO finish this function
+        def embed(d: str, t: str = None, f: str = None):
+            embed = discord.Embed(
+                description=d,
+                color=self.embed_color,
+            )
+            if t is not None:
+                embed.title = t
+            if f is not None:
+                embed.set_footer(text=f)
+
+            return embed
+
 
 # * all needed variables
 load_dotenv()
@@ -38,8 +51,18 @@ async def on_ready():
     # ? change bot activity
     await bot.change_presence(activity=discord.Game(name='/help'))
     # ? print message
-    print(f'Logged in as: {bot.user}')
-    print(f'Discord version: {discord.__version__} ')
+    print(f"""
+     ______               _           _   
+    |  ____|             | |         | |  
+    | |__ _   _ _ __  ___| |__   ___ | |_ 
+    |  __| | | | '_ \/ __| '_ \ / _ \| __|
+    | |  | |_| | | | \__ \ |_) | (_) | |_ 
+    |_|   \__,_|_| |_|___/_.__/ \___/ \__|
+
+        made by Funshayo
+        Logged in as: {bot.user}
+        Discord version: {discord.__version__} 
+    """)
     # ! sync all commands
     try:
         await tree.sync()
