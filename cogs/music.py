@@ -1,7 +1,9 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
+
 from youtube_dl import YoutubeDL
+
 import asyncio
 
 # TODO add some buttons
@@ -65,9 +67,7 @@ class Music(commands.Cog):
 
                 # ! in case we fail to connect
                 if self.vc == None:
-                    embed = discord.Embed(
-                        title="", description="Could not connect to voice channel", color=self.color)
-                    await interaction.response.send_message(embed=embed)
+                    await self.bot.embed(interaction, "Could not connect to voice channel", ephemeral=True)
                     return
             else:
                 await self.vc.move_to(self.music_queue[0][1])
@@ -97,21 +97,15 @@ class Music(commands.Cog):
         user_voice = interaction.user.voice
         if user_voice is None:
             # ! you need to be connected so that the bot knows where to go
-            embed = discord.Embed(
-                title="", description="Connect to the voice channel", color=self.color)
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await self.bot.embed(interaction, "Connect to the voice channel", ephemeral=True)
         elif self.is_paused:
             self.vc.resume()
         else:
             song = self.search_yt(query)
             if type(song) == type(True):
-                embed = discord.Embed(
-                    title="", description="Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format", color=self.color)
-                await interaction.response.send_message(embed=embed)
+                await self.bot.embed(interaction, "Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format", ephemeral=True)
             else:
-                embed = discord.Embed(
-                    title="", description="Song added to the queue", color=self.color)
-                await interaction.response.send_message(embed=embed)
+                await self.bot.embed(interaction, "Song added to the queue")
                 self.music_queue.append([song, user_voice.channel])
 
                 if self.is_playing == False:
@@ -124,16 +118,12 @@ class Music(commands.Cog):
             self.is_playing = False
             self.is_paused = True
             self.vc.pause()
-            embed = discord.Embed(
-                title="", description="Pause on", color=self.color)
-            await interaction.response.send_message(embed=embed)
+            await self.bot.embed(interaction, "Pause on")
         elif self.is_paused:
             self.is_paused = False
             self.is_playing = True
             self.vc.resume()
-            embed = discord.Embed(
-                title="", description="Pause off", color=self.color)
-            await interaction.response.send_message(embed=embed)
+            await self.bot.embed(interaction, "Pause off")
 
     @app_commands.command(name="skip", description="Skips the current song being played")
     @app_commands.guild_only()
@@ -142,9 +132,7 @@ class Music(commands.Cog):
             self.vc.stop()
             # ! try to play next in the queue if it exists
             await self.play_music(interaction)
-            embed = discord.Embed(
-                title="", description="Song skipped", color=self.color)
-            await interaction.response.send_message(embed=embed)
+            await self.bot.embed(interaction, "Song skipped")
 
     @app_commands.command(name="queue", description="Displays the current songs in queue")
     @app_commands.guild_only()
@@ -157,13 +145,9 @@ class Music(commands.Cog):
             retval += self.music_queue[i][0]['title'] + "\n"
 
         if retval != "":
-            embed = discord.Embed(
-                title="Queue:", description=retval, color=self.color)
-            await interaction.response.send_message(embed=embed)
+            await self.bot.embed(interaction, retval, title="Queue:")
         else:
-            embed = discord.Embed(
-                title="", description="No music in queue", color=self.color)
-            await interaction.response.send_message(embed=embed)
+            await self.bot.embed(interaction, "No music in queue")
 
     @app_commands.command(name="queue_clear", description="Stops the music and clears the queue")
     @app_commands.guild_only()
@@ -171,9 +155,7 @@ class Music(commands.Cog):
         if self.vc != None and self.is_playing:
             self.vc.stop()
         self.music_queue = []
-        embed = discord.Embed(
-            title="", description="Music queue cleared", color=self.color)
-        await interaction.response.send_message(embed=embed)
+        await self.bot.embed(interaction, "Music queue cleared")
 
     @app_commands.command(name="leave", description="Kick the bot from voice chat")
     @app_commands.guild_only()
@@ -181,20 +163,15 @@ class Music(commands.Cog):
         self.is_playing = False
         self.is_paused = False
         await self.vc.disconnect()
-        embed = discord.Embed(
-            title="", description="Bot left the voice chat", color=self.color)
-        await interaction.response.send_message(embed=embed)
+        await self.bot.embed(interaction, "Bot left the voice chat")
 
     @app_commands.command(name="nowplaying", description="Prints the current song name")
     @app_commands.guild_only()
     async def nowplaying(self, interaction: discord.Interaction):
         if interaction.user.voice is None or self.is_playing is False:
-            embed = discord.Embed(
-                title="", description="No song is playing", color=self.color)
-            await interaction.response.send_message(embed=embed)
-        embed = discord.Embed(
-            title="Now Playing:", description=self.nowplayingsong, color=self.color)
-        await interaction.response.send_message(embed=embed)
+            await self.bot.embed(interaction, "No song is playing")
+
+        await self.bot.embed(interaction, self.nowplayingsong, title="Now Playing:")
 
     # TODO this command
     @app_commands.command(name="loop", description="Loops the song")
@@ -203,19 +180,13 @@ class Music(commands.Cog):
         user_voice = interaction.user.voice
         if user_voice is None:
             # ! you need to be connected so that the bot knows where to go
-            embed = discord.Embed(
-                title="", description="Connect to the voice channel", color=self.color)
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await self.bot.embed(interaction, "Connect to the voice channel", ephemeral=True)
         else:
             self.is_looped ^= True
             if self.is_looped == False:
-                embed = discord.Embed(
-                    title="", description="Loop is now off", color=self.color)
-                await interaction.response.send_message(embed=embed)
+                await self.bot.embed(interaction, "Loop is now off")
             else:
-                embed = discord.Embed(
-                    title="", description="Loop is now on", color=self.color)
-                await interaction.response.send_message(embed=embed)
+                await self.bot.embed(interaction, "Loop is now on")
 
 
 async def setup(bot):
