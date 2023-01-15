@@ -6,7 +6,7 @@ from youtube_dl import YoutubeDL
 
 import asyncio
 
-# TODO add some buttons
+# TODO add some buttons and update the code with embed func
 
 
 class Music(commands.Cog):
