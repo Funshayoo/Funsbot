@@ -1,10 +1,11 @@
 import discord
-import os
 from discord.ext import commands
+from discord import app_commands
+from discord.ext.commands import has_permissions
+
+import os
 from dotenv import load_dotenv
 from notion_client import Client
-from discord.ext.commands import has_permissions
-from discord import app_commands
 
 load_dotenv()
 notion_client = os.getenv("NOTION_TOKEN")

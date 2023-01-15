@@ -1,8 +1,11 @@
-import asyncio
+
 import discord
 from discord import app_commands
 from discord.ext import commands
+
+import asyncio
 import random
+
 import os
 from dotenv import load_dotenv
 
@@ -12,13 +15,12 @@ class Funsbot(commands.AutoShardedBot):
         super().__init__(*args, **kwargs)
         self.embed_color = 0x2F3136
 
-    async def embed(self, interaction: discord.Interaction, description: str, title: str = None, footer: str = None, ephermal: bool = False):
+    async def embed(self, interaction: discord.Interaction, description: str, title: str = None,  ephermal: bool = False):
         embed = discord.Embed(
             description=description, color=self.embed_color)
         if title is not None:
             embed.title = title
-        if footer is not None:
-            embed.set_footer = footer
+
         await interaction.response.send_message(embed=embed, ephemeral=ephermal)
 
 
