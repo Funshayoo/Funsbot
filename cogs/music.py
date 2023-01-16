@@ -84,6 +84,15 @@ class Music(commands.Cog):
         else:
             self.is_playing = False
 
+    # TODO finish and use this function
+    async def check_user_voice(self, user_voice, interaction) -> bool:
+        if user_voice is None:
+            # ! you need to be connected so that the bot knows where to go
+            await self.bot.embed(interaction, "Connect to the voice channel", ephemeral=True)
+            return False
+        else:
+            return True
+
     @commands.Cog.listener()
     async def on_ready(self):
         print('Loaded music.py!')
