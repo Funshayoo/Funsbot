@@ -6,7 +6,7 @@ from youtube_dl import YoutubeDL
 
 import asyncio
 
-# TODO add some buttons and update the code with embed func
+# TODO add some buttons and clear up this code
 
 
 class Music(commands.Cog):
@@ -27,6 +27,7 @@ class Music(commands.Cog):
 
         self.vc = None
         self.nowplayingsong = ""
+        self.nowplayingsource = None
 
     # ? searching the item on youtube
     def search_yt(self, item):
@@ -50,7 +51,7 @@ class Music(commands.Cog):
             self.music_queue.pop(0)
 
             self.vc.play(discord.FFmpegPCMAudio(
-                m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
+                m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.song_finished())
         else:
             self.is_playing = False
 
@@ -74,24 +75,31 @@ class Music(commands.Cog):
 
             # ! remove the first element as you are currently playing it
             self.nowplayingsong = self.music_queue[0][0]['title']
+            self.nowplayingsource = self.music_queue[0][0]['source']
             self.music_queue.pop(0)
 
             self.vc.play(discord.FFmpegPCMAudio(
-                m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
+                m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.song_finished())
             self.vc.pause()
             await asyncio.sleep(1)
             self.vc.resume()
         else:
             self.is_playing = False
 
+    def song_finished(self):
+        if self.is_looped == True:
+            m_url = self.nowplayingsource
+            self.vc.play(discord.FFmpegPCMAudio(
+                m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.song_finished())
+        else:
+            self.play_next()
+
     # TODO finish and use this function
     async def check_user_voice(self, user_voice, interaction) -> bool:
         if user_voice is None:
-            # ! you need to be connected so that the bot knows where to go
-            await self.bot.embed(interaction, "Connect to the voice channel", ephemeral=True)
-            return False
-        else:
             return True
+        else:
+            return False
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -182,7 +190,6 @@ class Music(commands.Cog):
 
         await self.bot.embed(interaction, self.nowplayingsong, title="Now Playing:")
 
-    # TODO this command
     @app_commands.command(name="loop", description="Loops the song")
     @app_commands.guild_only()
     async def loop(self, interaction: discord.Interaction):
