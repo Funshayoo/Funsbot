@@ -73,7 +73,7 @@ class Wordle(commands.Cog):
             await self.make_new_game()
 
         if not await self.process_guess(guess):
-            await self.bot.embed(interaction, "Your guess is invalid", ephemeral=False)
+            await self.bot.embed(interaction, "Your guess is invalid", ephemeral=True)
         else:
             if guess == self.answer:
                 self.is_playing = False
