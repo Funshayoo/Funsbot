@@ -81,25 +81,6 @@ async def on_member_join(member):
     await member.add_roles(role)
 
 
-# ? on message event
-
-
-@bot.event
-async def on_message(message):
-    # ? funni gówno joke
-    answer_array = ['gówno jeden zero', 'jajco', 'chujów sto']
-    co_array = ['co', 'co?']
-
-    if (message.author == bot):
-        return
-    elif message.content.lower() in co_array:
-        embed = discord.Embed(title="", description=random.choice(
-            answer_array), color=bot.embed_color)
-        await message.reply(embed=embed)
-
-    #! allow using prefix commands
-    await bot.process_commands(message)
-
 # ? help command
 
 
