@@ -3,6 +3,11 @@ from discord.ext import commands
 from discord import app_commands
 
 import sqlite3
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+database_dir = os.getenv("DATABASE_DIRECTORY")
 
 
 class Database(commands.Cog):
@@ -15,7 +20,7 @@ class Database(commands.Cog):
     async def on_ready(self):
         print('Loaded database.py!')
         wordle_database = sqlite3.connect(
-            "C:\Files\Programming\Funsbot\wordle_src\wordle.sqlite3")
+            database_dir)
         wordle_cursor = wordle_database.cursor()
         wordle_cursor.execute('''CREATE TABLE IF NOT EXISTS main (
             user_id INTEGER)''')
@@ -23,7 +28,7 @@ class Database(commands.Cog):
     @app_commands.command(name="test_database", description="test the database")
     async def test_database(self, interaction: discord.Interaction):
         wordle_database = sqlite3.connect(
-            "C:\Files\Programming\Funsbot\wordle_src\wordle.sqlite3")
+            database_dir)
         wordle_cursor = wordle_database.cursor()
         author = interaction.user
         wordle_cursor.execute(
