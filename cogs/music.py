@@ -6,8 +6,6 @@ from youtube_dl import YoutubeDL
 
 import asyncio
 
-# TODO add some buttons and clear up this code
-
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -94,7 +92,6 @@ class Music(commands.Cog):
         else:
             self.play_next()
 
-    # TODO finish and use this function
     async def check_user_voice(self, user_voice, interaction) -> bool:
         if user_voice is None:
             return True

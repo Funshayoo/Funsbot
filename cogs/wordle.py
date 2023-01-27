@@ -82,7 +82,6 @@ class Wordle(commands.Cog):
                 colored_word = await self.generate_colored_word(guess, self.answer)
                 await self.bot.embed(interaction, f"{colored_word} {guess}")
 
-    #   TODO this command
     @ app_commands.command(name="wordle_stats", description="View your wordle stats")
     async def wordle_stats(self, interaction: discord.Interaction):
         await self.bot.embed(interaction, "", title="Comming soon :eyes:")
