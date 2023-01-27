@@ -20,23 +20,23 @@ class Database(commands.Cog):
         wordle_cursor.execute('''CREATE TABLE IF NOT EXISTS main (
             user_id INTEGER)''')
 
-    # @app_commands.command(name="db_test", description="test database")
-    # async def db_test(self, interaction: discord.Interaction):
-    #     wordle_database = sqlite3.connect(
-    #         "C:\Files\Programming\Funsbot\wordle_src\wordle.sqlite3")
-    #     wordle_cursor = wordle_database.cursor()
-    #     author = interaction.user
-    #     wordle_cursor.execute(
-    #         '''SELECT user_id FROM main WHERE user_id = {author.id}''')
-    #     result = wordle_cursor.fetchone()
-    #     if result is None:
-    #         sql = ("INSERT INTO main(user_id) VALUES (?)")
-    #         val = (author.id)
-    #         wordle_cursor.execute(sql, val)
-    #     wordle_database.commit()
-    #     wordle_cursor.close()
-    #     wordle_database.close()
-    #     await self.bot.embed(interaction, "Test")
+    @app_commands.command(name="test_database", description="test the database")
+    async def test_database(self, interaction: discord.Interaction):
+        wordle_database = sqlite3.connect(
+            "C:\Files\Programming\Funsbot\wordle_src\wordle.sqlite3")
+        wordle_cursor = wordle_database.cursor()
+        author = interaction.user
+        wordle_cursor.execute(
+            f"SELECT user_id FROM main WHERE user_id = {author.id}")
+        result = wordle_cursor.fetchone()
+        if result is None:
+            sql = ("INSERT INTO main(user_id) VALUES (?)")
+            val = (author.id)
+            wordle_cursor.execute(sql, val)
+        wordle_database.commit()
+        wordle_cursor.close()
+        wordle_database.close()
+        await self.bot.embed(interaction, "Test")
 
 
 async def setup(bot):
