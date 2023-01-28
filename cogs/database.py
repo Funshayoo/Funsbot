@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
-import sqlite3
+import aiosqlite
 import os
 from dotenv import load_dotenv
 
@@ -19,29 +19,23 @@ class Database(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print('Loaded database.py!')
-        wordle_database = sqlite3.connect(
-            database_dir)
-        wordle_cursor = wordle_database.cursor()
-        wordle_cursor.execute('''CREATE TABLE IF NOT EXISTS main (
-            user_id INTEGER)''')
+        async with aiosqlite.connect(database_dir) as wordle_db:
+            async with wordle_db.cursor() as wordle_cursor:
+                await wordle_cursor.execute("CREATE TABLE IF NOT EXISTS main (user_id INTEGER, guild_id INTEGER)")
+            await wordle_db.commit()
 
-    @app_commands.command(name="test_database", description="test the database")
     async def test_database(self, interaction: discord.Interaction):
-        wordle_database = sqlite3.connect(
-            database_dir)
-        wordle_cursor = wordle_database.cursor()
-        author = interaction.user
-        wordle_cursor.execute(
-            f"SELECT user_id FROM main WHERE user_id = {author.id}")
-        result = wordle_cursor.fetchone()
-        if result is None:
-            sql = ("INSERT INTO main(user_id) VALUES (?)")
-            val = (author.id)
-            wordle_cursor.execute(sql, val)
-        wordle_database.commit()
-        wordle_cursor.close()
-        wordle_database.close()
-        await self.bot.embed(interaction, "Test")
+        user = interaction.user
+        guild = interaction.guild
+        async with aiosqlite.connect(database_dir) as wordle_db:
+            async with wordle_db.cursor() as wordle_cursor:
+                await wordle_cursor.execute("SELECT user_id FROM main WHERE guild_id = ?", (guild.id,))
+                data = await wordle_cursor.fetchone()
+                if data:
+                    await wordle_cursor.execute("UPDATE main SET id = ? WHERE guild_id = ?", (user.id, guild.id))
+                else:
+                    await wordle_cursor.execute("INSERT INTO main (user_id, guild_id) VALUES (?, ?)", (user.id, guild.id))
+            await wordle_db.commit()
 
 
 async def setup(bot):
