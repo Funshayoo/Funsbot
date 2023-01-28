@@ -4,7 +4,6 @@ from discord import app_commands
 
 import random
 import datetime
-import csv
 
 
 class Wordle(commands.Cog):
