@@ -4,7 +4,6 @@ from discord import app_commands
 from discord.ext import commands
 
 import asyncio
-import random
 
 import os
 from dotenv import load_dotenv
@@ -79,14 +78,6 @@ async def on_member_join(member):
     await channel.send(embed=embed)
     role = discord.utils.get(member.guild.roles, name='Paczka')
     await member.add_roles(role)
-
-
-# ? help command
-
-
-@tree.command(name="help", description="use this command to get some help")
-async def help(interaction: discord.Interaction):
-    await bot.embed(interaction, "You can use commands by typing /**command**", ephemeral=True)
 
 
 # ! starts the bot

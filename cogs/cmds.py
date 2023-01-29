@@ -6,7 +6,7 @@ from discord.ext.commands import has_permissions
 import asyncio
 
 
-class Mod(commands.Cog):
+class Cmds(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -14,7 +14,12 @@ class Mod(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print('Loaded mod.py!')
+        print('Loaded cmds.py!')
+
+    # ? help command
+    @app_commands.command(name="help", description="use this command to get some help")
+    async def help(self, interaction: discord.Interaction):
+        await self.bot.embed(interaction, "You can use commands by typing /**command**", ephemeral=True)
 
     # ? kick command
     @app_commands.command(name="kick", description="Kick the user")
@@ -89,4 +94,4 @@ class Mod(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(Mod(bot))
+    await bot.add_cog(Cmds(bot))
