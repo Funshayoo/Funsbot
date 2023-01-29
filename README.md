@@ -1,41 +1,29 @@
-<h1 align="center">
-  Funsbot <br>
-  <img src="https://i.postimg.cc/NMzRy1LY/Funsbot.png"   
-</h1>
+![banner](https://i.postimg.cc/VkYcw2Lt/Funsbot.png)
 
 <p align="center">
-  <a href="#overview">Overview</a>
-  •
-  <a href="#installation">Installation</a>
-  •
-  <a href="#join-the-community">Community</a>
-  •
-  <a href="#license">License</a>
-  •
-  <a href="#todo">TODO</a>
+    <a href="https://discord.gg/37Z3gS3jj5"><img src="https://discordapp.com/api/guilds/1007631720155205632/widget.png?style=banner3" alt="Discord Server"></a>
 </p>
 
-# Overview
+## 📖 Overview
 
-Funsbot is a powerful Discord bot that offers a wide range of features for your server. Whether you're looking for moderation tools, music functionality, or just want to have some fun, Funsbot has you covered.
+Funsbot is a Discord bot that offers a wide range of features for your server. Whether you're looking for moderation tools, music functionality, or just want to have some fun, Funsbot has you covered.
 
-[Installation](#installation) is easy, and you do **NOT** need to know anything about coding!
+## ⌨ Planned Features
 
-**Here are some of the features that Funsbot has to offer:**
+- Music Player
+- Moderation Tools
+- Wordle game
+- Fun Commands
 
-- Funsbot includes a variety of moderation commands to help keep your server running smoothly. You can use Funsbot to mute, kick, or ban users who break the rules, as well as view server logs or clean the chat.
-- Funsbot can play music from a variety of sources, including YouTube, SoundCloud, and Spotify.
-- Funsbot has a variety of fun commands that will keep you and your friends entertained. You can use Funsbot to tell jokes, generate memes, or even play games like wordle.
-- **and many more**
+## 🤝 Contributing
 
-# Installation
+Contributions, feedback, and bug reports are welcome! Feel free to check out our [issues page](https://github.com/Funshayoo/Funsbot/issues) to find out what you could do!
 
-**Soon**
+A big thanks to all those who contribute to the project ❤
 
-# Join the community!
+## 📜 Requirements
 
-Join us on our [Official Discord Server](https://discord.gg/37Z3gS3jj5)!
+These are the requirements for the bot.
 
-# License
-
-Released under the [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0.en.html) license.
+- [Python 3.11.1](https://www.python.org/downloads) (Required packages listed in requirements.txt)
+- [LavaLink Server](https://github.com/freyacodes/lavalink) (Java 11 required)
