@@ -1,4 +1,4 @@
 .env
 cogs/__pycache__
 .vscode
-.runfile.sh
+tools
