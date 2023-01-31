@@ -201,6 +201,12 @@ class Music(commands.Cog):
             else:
                 await self.bot.embed(interaction, "Loop is now on")
 
+    @app_commands.command(name="vc_members", description="prints the amount of vc members")
+    @app_commands.guild_only()
+    async def vc_members(self, interaction: discord.Interaction):
+        vc_members = len(interaction.user.voice.channel.members)
+        await self.bot.embed(interaction, f"There is {vc_members} vc members")
+
 
 async def setup(bot):
     await bot.add_cog(Music(bot))
