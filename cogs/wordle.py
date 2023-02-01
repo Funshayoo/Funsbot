@@ -4,6 +4,12 @@ from discord import app_commands
 
 import random
 import datetime
+import aiosqlite
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+database_dir = os.getenv("DATABASE_DIRECTORY")
 
 
 class Wordle(commands.Cog):
@@ -11,7 +17,7 @@ class Wordle(commands.Cog):
         self.bot = bot
         self.color = self.bot.embed_color
         self.is_playing = False
-        self.answer = ""
+        self.answer = ''
         self.letter_colors = ["<:GreenSquare:1058105080630493244>",
                               "<:YellowSquare:1058105081637122069>", "<:ColorAbsent:1058105077073711144>"]
 
@@ -21,13 +27,23 @@ class Wordle(commands.Cog):
         self.all_words = set(word.strip()
                              for word in open("./wordle_src/dictionary.txt"))
 
-    async def get_random_word(self) -> str:
+    def get_random_word(self) -> str:
         return random.choice(self.popular)
 
-    async def make_new_game(self) -> None:
+    async def make_new_game(self, interaction: discord.Interaction) -> None:
+        user = interaction.user
         self.is_playing = True
-        self.answer = await self.get_random_word()
+        self.answer = self.get_random_word()
         print(self.answer)
+
+        async with aiosqlite.connect(database_dir) as wordle_db:
+            async with wordle_db.cursor() as wordle_cursor:
+                await wordle_cursor.execute(f"SELECT todays_word FROM main WHERE user_id = {user.id}")
+                await wordle_cursor.fetchone()
+                # TODO why this don't work
+                await wordle_cursor.execute(f"UPDATE main SET todays_word = 'test' WHERE user_id = {user.id}")
+
+            await wordle_db.commit()
 
     async def process_guess(self, word: str) -> bool:
         word = word.lower()
@@ -69,7 +85,7 @@ class Wordle(commands.Cog):
     @app_commands.describe(guess="Your guess")
     async def wordle(self, interaction: discord.Interaction,  guess: str):
         if not self.is_playing:
-            await self.make_new_game()
+            await self.make_new_game(interaction)
 
         if not await self.process_guess(guess):
             await self.bot.embed(interaction, "Your guess is invalid", ephemeral=True)
@@ -83,7 +99,23 @@ class Wordle(commands.Cog):
 
     @ app_commands.command(name="wordle_stats", description="View your wordle stats")
     async def wordle_stats(self, interaction: discord.Interaction):
-        await self.bot.embed(interaction, "", title="Comming soon :eyes:")
+        user = interaction.user
+
+        async with aiosqlite.connect(database_dir) as wordle_db:
+            async with wordle_db.cursor() as wordle_cursor:
+                await wordle_cursor.execute(f"SELECT games, wins, losses FROM main WHERE user_id = {user.id}")
+                stats = await wordle_cursor.fetchone()
+                try:
+                    games = stats[0]
+                    wins = stats[1]
+                    losses = stats[2]
+                except:
+                    games = 0
+                    wins = 0
+                    losses = 0
+
+            await wordle_db.commit()
+        await self.bot.embed(interaction, f"Games: {games} \n Wins: {wins} \n Losses: {losses}", title="Your score:")
 
 
 async def setup(bot):
