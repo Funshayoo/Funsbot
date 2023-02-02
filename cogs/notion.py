@@ -3,13 +3,8 @@ from discord.ext import commands
 from discord import app_commands
 from discord.ext.commands import has_permissions
 
-import os
-from dotenv import load_dotenv
 from notion_client import Client
-
-load_dotenv()
-notion_client = os.getenv("NOTION_TOKEN")
-database_id = os.getenv("NOTION_DATABASE")
+from config import Config
 
 
 class Notion(commands.Cog):

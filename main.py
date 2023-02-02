@@ -1,12 +1,11 @@
-
 import discord
 from discord import app_commands
 from discord.ext import commands
 
 import asyncio
+from config import Config
 
 import os
-from dotenv import load_dotenv
 
 
 class Funsbot(commands.AutoShardedBot):
@@ -24,8 +23,6 @@ class Funsbot(commands.AutoShardedBot):
 
 
 # * all needed variables
-load_dotenv()
-token = os.getenv("DISCORD_TOKEN")
 
 intents = discord.Intents().all()
 bot = Funsbot(command_prefix="/", intents=intents, help_command=None)
@@ -86,5 +83,5 @@ async def on_member_join(member):
 async def main():
     async with bot:
         await load_extensions()
-        await bot.start(token)
+        await bot.start(Config.DISCORD_TOKEN)
 asyncio.run(main())
