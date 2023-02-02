@@ -5,11 +5,7 @@ from discord import app_commands
 import random
 import datetime
 import aiosqlite
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-database_dir = os.getenv("DATABASE_DIRECTORY")
+from config import Config
 
 
 class Wordle(commands.Cog):
@@ -17,7 +13,7 @@ class Wordle(commands.Cog):
         self.bot = bot
         self.color = self.bot.embed_color
         self.is_playing = False
-        self.answer = ''
+        self.answer = ""
         self.letter_colors = ["<:GreenSquare:1058105080630493244>",
                               "<:YellowSquare:1058105081637122069>", "<:ColorAbsent:1058105077073711144>"]
 
@@ -32,18 +28,20 @@ class Wordle(commands.Cog):
 
     async def make_new_game(self, interaction: discord.Interaction) -> None:
         user = interaction.user
+        games = 1
         self.is_playing = True
         self.answer = self.get_random_word()
         print(self.answer)
+        await self.update_database_answer(interaction)
 
-        async with aiosqlite.connect(database_dir) as wordle_db:
-            async with wordle_db.cursor() as wordle_cursor:
-                await wordle_cursor.execute(f"SELECT todays_word FROM main WHERE user_id = {user.id}")
-                await wordle_cursor.fetchone()
-                # TODO why this don't work
-                await wordle_cursor.execute(f"UPDATE main SET todays_word = 'test' WHERE user_id = {user.id}")
+        # TODO fix this bug
+        # async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
+        #     async with wordle_db.cursor() as wordle_cursor:
+        #         await wordle_cursor.execute(f"SELECT todays_word FROM main WHERE user_id = {user.id}")
+        #         await wordle_cursor.fetchone()
+        #         await wordle_cursor.execute(f"UPDATE main SET todays_word = self.answer WHERE user_id = user.id")
 
-            await wordle_db.commit()
+        #     await wordle_db.commit()
 
     async def process_guess(self, word: str) -> bool:
         word = word.lower()
@@ -101,7 +99,7 @@ class Wordle(commands.Cog):
     async def wordle_stats(self, interaction: discord.Interaction):
         user = interaction.user
 
-        async with aiosqlite.connect(database_dir) as wordle_db:
+        async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
             async with wordle_db.cursor() as wordle_cursor:
                 await wordle_cursor.execute(f"SELECT games, wins, losses FROM main WHERE user_id = {user.id}")
                 stats = await wordle_cursor.fetchone()
@@ -115,7 +113,12 @@ class Wordle(commands.Cog):
                     losses = 0
 
             await wordle_db.commit()
-        await self.bot.embed(interaction, f"Games: {games} \n Wins: {wins} \n Losses: {losses}", title="Your score:")
+
+        if games == 0:
+            await self.bot.embed(interaction, 'You need to play some games first', ephemeral=True)
+        else:
+            win_ratio = games / wins * 100
+            await self.bot.embed(interaction, f"Games: {games} \n Wins: {wins} \n Losses: {losses}\n Win ratio: {win_ratio}%", title="Your score:")
 
 
 async def setup(bot):
