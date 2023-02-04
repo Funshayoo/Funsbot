@@ -54,7 +54,7 @@ class Cmds(commands.Cog):
 
         await member.add_roles(mutedRole, reason=reason)
 
-    # ? unmute comand
+    # ? unmute command
     @app_commands.command(name="unmute", description="Unmute the user")
     @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)

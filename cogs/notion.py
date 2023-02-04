@@ -16,10 +16,10 @@ class Notion(commands.Cog):
     async def on_ready(self):
         print('Loaded notion.py!')
 
-    @app_commands.command(name="zadania", description="See what is for tommorow homework")
+    @app_commands.command(name="zadania", description="See what is for tomorrow homework")
     @ app_commands.checks.has_role("8c")
     async def zadania(self, interaction: discord.Interaction):
-        await self.bot.embed(interaction, "", title="Comming soon :eyes:")
+        await self.bot.embed(interaction, "", title="Coming soon :eyes:")
 
 
 async def setup(bot):
