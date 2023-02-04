@@ -28,11 +28,9 @@ class Wordle(commands.Cog):
 
     async def make_new_game(self, interaction: discord.Interaction) -> None:
         user = interaction.user
-        games = 1
         self.is_playing = True
         self.answer = self.get_random_word()
         print(self.answer)
-        await self.update_database_answer(interaction)
 
         # TODO fix this bug
         # async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
