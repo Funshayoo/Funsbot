@@ -89,8 +89,13 @@ class Music(commands.Cog):
             m_url = self.nowplayingsource
             self.vc.play(discord.FFmpegPCMAudio(
                 m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.song_finished())
-        else:
+        elif len(self.music_queue) > 0:
             self.play_next()
+        else:
+            self.is_playing = False
+            self.is_paused = False
+            asyncio.run_coroutine_threadsafe(
+                self.vc.disconnect(), self.bot.loop)
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -194,12 +199,6 @@ class Music(commands.Cog):
                 await self.bot.embed(interaction, "Loop is now off")
             else:
                 await self.bot.embed(interaction, "Loop is now on")
-
-    @app_commands.command(name="vc_members", description="prints the amount of vc members")
-    @app_commands.guild_only()
-    async def vc_members(self, interaction: discord.Interaction):
-        vc_members = len(interaction.user.voice.channel.members)
-        await self.bot.embed(interaction, f"There is {vc_members} vc members")
 
 
 async def setup(bot):
