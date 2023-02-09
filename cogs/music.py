@@ -92,12 +92,6 @@ class Music(commands.Cog):
         else:
             self.play_next()
 
-    async def check_user_voice(self, user_voice, interaction) -> bool:
-        if user_voice is None:
-            return True
-        else:
-            return False
-
     @commands.Cog.listener()
     async def on_ready(self):
         print('Loaded music.py!')
