@@ -26,14 +26,16 @@ class Database(commands.Cog):
         if message.author.bot:
             return
         user = message.author
-        word = ""
 
         async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
             async with wordle_db.cursor() as wordle_cursor:
                 await wordle_cursor.execute(f"SELECT user_id FROM main WHERE user_id = {user.id}")
                 data = await wordle_cursor.fetchone()
                 if data is None:
-                    await wordle_cursor.execute(f"INSERT INTO main (user_id, todays_word, can_guess, games, wins, losses) VALUES {user.id, word, True, 0, 0, 0}")
+                    sql = (
+                        "INSERT INTO main (user_id, todays_word, can_guess, games, wins, losses) VALUES (?, ?, ?, ?, ?, ?)")
+                    val = (user.id, "", True, 0, 0, 0)
+                    await wordle_cursor.execute(sql, val)
             await wordle_db.commit()
 
 

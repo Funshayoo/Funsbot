@@ -32,14 +32,15 @@ class Wordle(commands.Cog):
         self.answer = self.get_random_word()
         print(self.answer)
 
-        # TODO fix this bug
-        # async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
-        #     async with wordle_db.cursor() as wordle_cursor:
-        #         await wordle_cursor.execute(f"SELECT todays_word FROM main WHERE user_id = {user.id}")
-        #         await wordle_cursor.fetchone()
-        #         await wordle_cursor.execute(f"UPDATE main SET todays_word = self.answer WHERE user_id = user.id")
+        async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
+            async with wordle_db.cursor() as wordle_cursor:
+                await wordle_cursor.execute(f"SELECT todays_word FROM main WHERE user_id = {user.id}")
+                user_word = await wordle_cursor.fetchone()
 
-        #     await wordle_db.commit()
+                sql = ("UPDATE main SET todays_word = ? WHERE user_id = ?")
+                val = (self.answer, user.id)
+                await wordle_cursor.execute(sql, val)
+            await wordle_db.commit()
 
     async def process_guess(self, word: str) -> bool:
         word = word.lower()
@@ -78,7 +79,7 @@ class Wordle(commands.Cog):
         print('Loaded wordle.py!')
 
     @ app_commands.command(name="wordle", description="Play a game of wordle")
-    @app_commands.describe(guess="Your guess")
+    @ app_commands.describe(guess="Your guess")
     async def wordle(self, interaction: discord.Interaction,  guess: str):
         if not self.is_playing:
             await self.make_new_game(interaction)
