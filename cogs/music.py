@@ -7,6 +7,18 @@ from youtube_dl import YoutubeDL
 from asyncio import run_coroutine_threadsafe, sleep
 
 
+class Music_Menu(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.value = None
+
+    @discord.ui.button(label='Queue', style=discord.ButtonStyle.danger)
+    async def Queue(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message('Confirming', ephemeral=True)
+        self.value = True
+        self.stop()
+
+
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -199,6 +211,11 @@ class Music(commands.Cog):
                 await self.bot.embed(interaction, "Loop is now off")
             else:
                 await self.bot.embed(interaction, "Loop is now on")
+
+    @app_commands.command(name="test", description="Shows a button")
+    async def test(self, interaction: discord.Interaction):
+        view = Music_Menu()
+        await interaction.response.send_message('test', view=view)
 
 
 async def setup(bot):
