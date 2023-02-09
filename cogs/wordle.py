@@ -34,11 +34,12 @@ class Wordle(commands.Cog):
 
         async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
             async with wordle_db.cursor() as wordle_cursor:
-                await wordle_cursor.execute(f"SELECT todays_word FROM main WHERE user_id = {user.id}")
-                user_word = await wordle_cursor.fetchone()
+                await wordle_cursor.execute(f"SELECT todays_word, games FROM wordle WHERE user_id = {user.id}")
+                user_data = await wordle_cursor.fetchone()
 
-                sql = ("UPDATE main SET todays_word = ? WHERE user_id = ?")
-                val = (self.answer, user.id)
+                sql = (
+                    "UPDATE wordle SET todays_word = ?, games = ? WHERE user_id = ?")
+                val = (self.answer, user_data[1] + 1, user.id)
                 await wordle_cursor.execute(sql, val)
             await wordle_db.commit()
 
@@ -100,7 +101,7 @@ class Wordle(commands.Cog):
 
         async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
             async with wordle_db.cursor() as wordle_cursor:
-                await wordle_cursor.execute(f"SELECT games, wins, losses FROM main WHERE user_id = {user.id}")
+                await wordle_cursor.execute(f"SELECT games, wins, losses FROM wordle WHERE user_id = {user.id}")
                 stats = await wordle_cursor.fetchone()
                 try:
                     games = stats[0]
@@ -116,7 +117,11 @@ class Wordle(commands.Cog):
         if games == 0:
             await self.bot.embed(interaction, 'You need to play some games first', ephemeral=True)
         else:
-            win_ratio = games / wins * 100
+            if wins == 0:
+                win_ratio = 0
+            else:
+                win_ratio = games / wins * 100
+
             await self.bot.embed(interaction, f"Games: {games} \n Wins: {wins} \n Losses: {losses}\n Win ratio: {win_ratio}%", title="Your score:")
 
 
