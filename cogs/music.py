@@ -4,7 +4,7 @@ from discord import app_commands
 
 from youtube_dl import YoutubeDL
 
-import asyncio
+from asyncio import run_coroutine_threadsafe, sleep
 
 
 class Music(commands.Cog):
