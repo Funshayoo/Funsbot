@@ -12,8 +12,11 @@ class Wordle(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.color = self.bot.embed_color
+
         self.is_playing = False
         self.answer = ""
+        self.tries_left = 0
+
         self.letter_colors = ["<:GreenSquare:1058105080630493244>",
                               "<:YellowSquare:1058105081637122069>", "<:ColorAbsent:1058105077073711144>"]
 
@@ -88,6 +91,25 @@ class Wordle(commands.Cog):
             await wordle_db.commit()
         await self.bot.embed(interaction, f"The answer was: **{self.answer}**", title=f"{interaction.user} guessed the word!")
 
+    async def remove_try(self, interaction):
+        user = interaction.user
+        async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
+            async with wordle_db.cursor() as wordle_cursor:
+                await wordle_cursor.execute(f"SELECT tries FROM wordle WHERE user_id = {user.id}")
+
+                user_data = await wordle_cursor.fetchone()
+                tries = user_data[0]
+                self.tries_left = tries - 1
+                sql = (
+                    "UPDATE wordle SET tries = ? WHERE user_id = ?")
+                val = (self.tries_left, user.id)
+                await wordle_cursor.execute(sql, val)
+
+            await wordle_db.commit()
+
+    async def game_over(self, interaction):
+        # TODO
+
     @ commands.Cog.listener()
     async def on_ready(self):
         print('Loaded wordle.py!')
@@ -109,6 +131,7 @@ class Wordle(commands.Cog):
 
         if self.is_playing == False:
             await self.make_new_game(interaction)
+            await self.remove_try(interaction)
 
         if not self.process_guess(guess):
             await self.bot.embed(interaction, "Your guess is invalid", ephemeral=True)
@@ -116,9 +139,12 @@ class Wordle(commands.Cog):
             if guess == self.answer:
                 await self.user_won(interaction)
 
+            elif self.tries_left == 0:
+                await self.bot.embed(interaction, f"The answer was: {self.answer}", "Game over:")
             else:
+                await self.remove_try(interaction)
                 colored_word = self.generate_colored_word(guess, self.answer)
-                await self.bot.embed(interaction, f"{colored_word} {guess}")
+                await self.bot.embed(interaction, f"{colored_word} {guess}", "Your guess:")
 
     @ app_commands.command(name="wordle_stats", description="View your wordle stats")
     async def wordle_stats(self, interaction: discord.Interaction):
