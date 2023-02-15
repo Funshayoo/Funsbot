@@ -73,19 +73,19 @@ class Wordle(commands.Cog):
         return "".join(colored_word)
 
     async def user_won(self, interaction: discord.Interaction) -> bool:
-        # user = interaction.user
-        # async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
-        #     async with wordle_db.cursor() as wordle_cursor:
-        #         await wordle_cursor.execute(f"SELECT game_started, wins FROM wordle WHERE user_id = {user.id}")
+        user = interaction.user
+        async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
+            async with wordle_db.cursor() as wordle_cursor:
+                await wordle_cursor.execute(f"SELECT wins FROM wordle WHERE user_id = {user.id}")
 
-        #         user_data = await wordle_cursor.fetchone()
-        #         wins = user_data[1]
-        #         sql = (
-        #             "UPDATE wordle SET game_started = ?, wins = ? WHERE user_id = ?")
-        #         val = (False, wins + 1)
-        #         await wordle_cursor.execute(sql, val)
+                user_data = await wordle_cursor.fetchone()
+                wins = user_data[0]
+                sql = (
+                    "UPDATE wordle SET wins = ?, game_started = ?, todays_word = ? WHERE user_id = ?")
+                val = (wins + 1, False, "", user.id)
+                await wordle_cursor.execute(sql, val)
 
-        #     await wordle_db.commit()
+            await wordle_db.commit()
         await self.bot.embed(interaction, f"The answer was: **{self.answer}**", title=f"{interaction.user} guessed the word!")
 
     @ commands.Cog.listener()
@@ -145,7 +145,7 @@ class Wordle(commands.Cog):
             if wins == 0:
                 win_ratio = 0
             else:
-                win_ratio = games / wins * 100
+                win_ratio = round(wins / games * 100)
 
             await self.bot.embed(interaction, f"Games: {games} \n Wins: {wins} \n Losses: {losses}\n Win ratio: {win_ratio}%", title="Your score:")
 
