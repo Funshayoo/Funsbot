@@ -84,8 +84,8 @@ class Wordle(commands.Cog):
                 user_data = await wordle_cursor.fetchone()
                 wins = user_data[0]
                 sql = (
-                    "UPDATE wordle SET wins = ?, game_started = ?, todays_word = ? WHERE user_id = ?")
-                val = (wins + 1, False, "", user.id)
+                    "UPDATE wordle SET wins = ?, game_started = ?, todays_word = ?, tries = ? WHERE user_id = ?")
+                val = (wins + 1, False, "", 5, user.id)
                 await wordle_cursor.execute(sql, val)
 
             await wordle_db.commit()
@@ -108,7 +108,21 @@ class Wordle(commands.Cog):
             await wordle_db.commit()
 
     async def game_over(self, interaction):
-        # TODO
+        user = interaction.user
+        async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
+            async with wordle_db.cursor() as wordle_cursor:
+                await wordle_cursor.execute(f"SELECT losses FROM wordle WHERE user_id = {user.id}")
+
+                user_data = await wordle_cursor.fetchone()
+                losses = user_data[0]
+                sql = (
+                    "UPDATE wordle SET losses = ?, game_started = ?, todays_word = ? WHERE user_id = ?")
+                val = (losses + 1, False, "", user.id)
+                await wordle_cursor.execute(sql, val)
+
+            await wordle_db.commit()
+        self.tries_left = 5
+        await self.bot.embed(interaction, f"The answer was: {self.answer}", "Game over:")
 
     @ commands.Cog.listener()
     async def on_ready(self):
@@ -131,7 +145,6 @@ class Wordle(commands.Cog):
 
         if self.is_playing == False:
             await self.make_new_game(interaction)
-            await self.remove_try(interaction)
 
         if not self.process_guess(guess):
             await self.bot.embed(interaction, "Your guess is invalid", ephemeral=True)
@@ -139,8 +152,8 @@ class Wordle(commands.Cog):
             if guess == self.answer:
                 await self.user_won(interaction)
 
-            elif self.tries_left == 0:
-                await self.bot.embed(interaction, f"The answer was: {self.answer}", "Game over:")
+            elif self.tries_left == 1:
+                await self.game_over(interaction)
             else:
                 await self.remove_try(interaction)
                 colored_word = self.generate_colored_word(guess, self.answer)
