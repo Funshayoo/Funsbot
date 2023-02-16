@@ -116,8 +116,8 @@ class Wordle(commands.Cog):
                 user_data = await wordle_cursor.fetchone()
                 losses = user_data[0]
                 sql = (
-                    "UPDATE wordle SET losses = ?, game_started = ?, todays_word = ? WHERE user_id = ?")
-                val = (losses + 1, False, "", user.id)
+                    "UPDATE wordle SET losses = ?, game_started = ?, todays_word = ?, tries = ? WHERE user_id = ?")
+                val = (losses + 1, False, "", 5, user.id)
                 await wordle_cursor.execute(sql, val)
 
             await wordle_db.commit()
