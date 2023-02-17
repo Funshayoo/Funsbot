@@ -212,10 +212,10 @@ class Music(commands.Cog):
             else:
                 await self.bot.embed(interaction, "Loop is now on")
 
-    @app_commands.command(name="test", description="Shows a button")
-    async def test(self, interaction: discord.Interaction):
-        view = Music_Menu()
-        await interaction.response.send_message('test', view=view)
+    # @app_commands.command(name="test", description="Shows a button")
+    # async def test(self, interaction: discord.Interaction):
+    #     view = Music_Menu()
+    #     await self.bot.embed(interaction, "test", view=view, footer="footer")
 
 
 async def setup(bot):
