@@ -83,7 +83,7 @@ sos==4.4
 ssh-import-id==5.10
 systemd-python==234
 toml==0.10.2
-Twisted==18.9.0
+Twisted==22.10.0
 typing-extensions==4.1.1
 ubuntu-advantage-tools==8001
 ufw==0.36
