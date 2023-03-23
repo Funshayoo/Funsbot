@@ -74,7 +74,7 @@ paramiko==2.9.3
 pbr==5.11.1
 pexpect==4.6.0
 Pillow==9.0.1
-protobuf==3.12.4
+protobuf==3.18.3
 ptyprocess==0.7.0
 pyasn1==0.4.2
 pyasn1-modules==0.2.1
