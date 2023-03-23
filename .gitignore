@@ -161,3 +161,4 @@ cython_debug/
 
 #database files
 database.db
+notion.json
