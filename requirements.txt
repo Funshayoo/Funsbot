@@ -2,4 +2,4 @@ aiosqlite==0.18.0
 discord.py==2.2.2
 python-dotenv==1.0.0
 requests==2.25.1
-youtube_dl==2021.12.17
+yt_dlp==2023.3.4
