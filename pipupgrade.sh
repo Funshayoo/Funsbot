@@ -1,2 +1,2 @@
 cat requirements.txt | while read PACKAGE; do pip install -U "$PACKAGE"; done
-pipreqs . --force
+python3 -m  pipreqs.pipreqs --force
