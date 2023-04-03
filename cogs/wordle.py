@@ -11,7 +11,6 @@ from config import Config
 class Wordle(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.color = self.bot.embed_color
 
         self.is_playing = False
         self.answer = ""

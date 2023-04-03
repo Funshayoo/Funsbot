@@ -27,7 +27,6 @@ python3 main.py
 > Docker installation
 
 ```shell
-TBA
 ```
 
 ## Contributors

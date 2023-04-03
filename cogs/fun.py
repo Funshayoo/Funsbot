@@ -9,7 +9,6 @@ class Fun(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.color = self.bot.embed_color
         self.flip_array = ['heads!', 'tails!']
 
     @commands.Cog.listener()
@@ -26,7 +25,7 @@ class Fun(commands.Cog):
             return
         elif message.content.lower() in co_array:
             embed = discord.Embed(title="", description=random.choice(
-                answer_array), color=self.color)
+                answer_array), color=self.bot_embed_color)
             await message.reply(embed=embed)
 
     # ? flip command

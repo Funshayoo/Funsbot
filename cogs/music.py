@@ -2,27 +2,19 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
-from youtube_dl import YoutubeDL
+from yt_dlp import YoutubeDL
 
 from asyncio import run_coroutine_threadsafe, sleep
+from threading import Timer
 
-
-class Music_Menu(discord.ui.View):
-    def __init__(self):
-        super().__init__()
-        self.value = None
-
-    @discord.ui.button(label='Queue', style=discord.ButtonStyle.danger)
-    async def Queue(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message('Confirming', ephemeral=True)
-        self.value = True
-        self.stop()
-
+class Options:
+    YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True'}
+    FFMPEG_OPTIONS = {
+                'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.color = self.bot.embed_color
 
         # * all the music related stuff
         self.is_playing = False
@@ -31,9 +23,6 @@ class Music(commands.Cog):
 
         # ! 2d array containing [song, channel]
         self.music_queue = []
-        self.YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True'}
-        self.FFMPEG_OPTIONS = {
-            'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
         self.vc = None
         self.nowplayingsong = ""
@@ -41,47 +30,17 @@ class Music(commands.Cog):
 
     # ? searching the item on youtube
     def search_yt(self, item):
-        with YoutubeDL(self.YDL_OPTIONS) as ydl:
+        with YoutubeDL(Options.YDL_OPTIONS) as ydl:
             try:
                 info = ydl.extract_info("ytsearch:%s" %
                                         item, download=False)['entries'][0]
             except Exception:
                 return False
+        return {'source': info['url'], 'title': info['title']}
 
-        return {'source': info['formats'][0]['url'], 'title': info['title']}
-
-    def play_next(self):
+    def play_music(self):
         if len(self.music_queue) > 0:
             self.is_playing = True
-
-            # ? get the first url
-            m_url = self.music_queue[0][0]['source']
-
-            # ! remove the first element as you are currently playing it
-            self.music_queue.pop(0)
-
-            self.vc.play(discord.FFmpegPCMAudio(
-                m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.song_finished())
-        else:
-            self.is_playing = False
-
-    # ! infinite loop checking
-    async def play_music(self, interaction: discord.Interaction):
-        if len(self.music_queue) > 0:
-            self.is_playing = True
-
-            m_url = self.music_queue[0][0]['source']
-
-            # ? try to connect to voice channel if you are not already connected
-            if self.vc == None or not self.vc.is_connected():
-                self.vc = await self.music_queue[0][1].connect()
-
-                # ! in case we fail to connect
-                if self.vc == None:
-                    await self.bot.embed(interaction, "Could not connect to voice channel", ephemeral=True)
-                    return
-            else:
-                await self.vc.move_to(self.music_queue[0][1])
 
             # ! remove the first element as you are currently playing it
             self.nowplayingsong = self.music_queue[0][0]['title']
@@ -89,20 +48,18 @@ class Music(commands.Cog):
             self.music_queue.pop(0)
 
             self.vc.play(discord.FFmpegPCMAudio(
-                m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.song_finished())
+                self.nowplayingsource, **Options.FFMPEG_OPTIONS), after=lambda e: self.song_finished())
             self.vc.pause()
-            await sleep(1)
             self.vc.resume()
         else:
             self.is_playing = False
 
     def song_finished(self):
         if self.is_looped == True:
-            m_url = self.nowplayingsource
             self.vc.play(discord.FFmpegPCMAudio(
-                m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.song_finished())
+                self.nowplayingsource, **Options.FFMPEG_OPTIONS), after=lambda e: self.song_finished())
         elif len(self.music_queue) > 0:
-            self.play_next()
+            self.play_music()
         else:
             self.is_playing = False
             self.is_paused = False
@@ -127,18 +84,22 @@ class Music(commands.Cog):
             self.vc.resume()
         else:
             song = self.search_yt(query)
+
             if type(song) == type(True):
                 await self.bot.embed(interaction, "Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format", ephemeral=True)
             else:
-                await self.bot.embed(interaction, "Song added to the queue")
                 self.music_queue.append([song, user_voice.channel])
+                self.vc = await self.music_queue[0][1].connect()
 
-                if self.is_playing == False:
-                    await self.play_music(interaction)
-
+                if self.vc == None:
+                    await self.bot.embed(interaction, "Could not connect to voice channel", ephemeral=True)
+                else:
+                    self.play_music()
+                    await self.bot.embed(interaction, "Song added to the queue")
+            
     @app_commands.command(name="pause_on_off", description="Pauses the current song being played")
     @app_commands.guild_only()
-    async def resume_or_pause(self, interaction: discord.Interaction):
+    async def pause_on_off(self, interaction: discord.Interaction):
         if self.is_playing:
             self.is_playing = False
             self.is_paused = True
@@ -159,7 +120,7 @@ class Music(commands.Cog):
             await self.play_music(interaction)
             await self.bot.embed(interaction, "Song skipped")
 
-    @app_commands.command(name="queue", description="Displays the current songs in queue")
+    @app_commands.command(name="queue", description="Displays the queue")
     @app_commands.guild_only()
     async def queue(self, interaction: discord.Interaction):
         retval = ""
@@ -211,13 +172,6 @@ class Music(commands.Cog):
                 await self.bot.embed(interaction, "Loop is now off")
             else:
                 await self.bot.embed(interaction, "Loop is now on")
-
-    # TODO buttons
-    # @app_commands.command(name="test", description="Shows a button")
-    # async def test(self, interaction: discord.Interaction):
-    #     view = Music_Menu()
-    #     await self.bot.embed(interaction, "test", view=view, footer="footer")
-
 
 async def setup(bot):
     await bot.add_cog(Music(bot))

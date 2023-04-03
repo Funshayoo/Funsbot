@@ -10,7 +10,6 @@ class Cmds(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.color = self.bot.embed_color
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -72,7 +71,7 @@ class Cmds(commands.Cog):
         await interaction.response.defer(thinking=True)
         await interaction.channel.purge(limit=amount)
         embed = discord.Embed(
-            title="", description=f'Cleared {amount} message(s)', color=self.color)
+            title="", description=f'Cleared {amount} message(s)', color=self.self.bot.embed_color)
         await interaction.channel.send(embed=embed)
 
     # ? announcements command
@@ -88,7 +87,7 @@ class Cmds(commands.Cog):
             return
         else:
             embed = discord.Embed(
-                title=title, description=message, color=self.color)
+                title=title, description=message, color=self.bot.embed_color)
             await channel.send(embed=embed)
             await channel.send(guild.default_role)
 

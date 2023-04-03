@@ -12,7 +12,6 @@ import json
 class Notion(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.color = self.bot.embed_color
 
         self.token = Config.NOTION_TOKEN
         self.database_id = Config.NOTION_DATABASE_ID
