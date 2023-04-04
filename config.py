@@ -12,3 +12,5 @@ class Config:
     NOTION_TOKEN = getenv("NOTION_TOKEN")
     NOTION_DATABASE_ID = getenv("NOTION_DATABASE_ID")
     NOTION_DATABASE = getenv("NOTION_DATABASE")
+
+    OPENAI_API_KEY = getenv("OPENAI_API_KEY")
