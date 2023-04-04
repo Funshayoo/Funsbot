@@ -74,6 +74,8 @@ class Music(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(song="What to play")
     async def play(self, interaction: discord.Interaction, song: str):
+        # await interaction.response.defer()
+
         query = " ".join(song)
 
         user_voice = interaction.user.voice
@@ -95,8 +97,8 @@ class Music(commands.Cog):
                     await self.bot.embed(interaction, "Could not connect to voice channel", ephemeral=True)
                 else:
                     self.play_music()
-                    await self.bot.embed(interaction, "Song added to the queue")
-            
+                    await self.bot.embed(interaction, title = "Added song to the queue:" , description = song['title'])
+
     @app_commands.command(name="pause_on_off", description="Pauses the current song being played")
     @app_commands.guild_only()
     async def pause_on_off(self, interaction: discord.Interaction):
