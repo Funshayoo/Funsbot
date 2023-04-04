@@ -7,6 +7,7 @@ from config import Config
 
 import requests
 import json
+import datetime
 
 
 class Notion(commands.Cog):
@@ -14,45 +15,61 @@ class Notion(commands.Cog):
         self.bot = bot
 
         self.token = Config.NOTION_TOKEN
-        self.database_id = Config.NOTION_DATABASE_ID
-        self.update_DB_URL = f'https://api.notion.com/v1/databases/{self.database_id}'
+        self.database_id = Config.NOTION_DATABASE
         self.db_data = None
 
-        self.headers = {
-            "Authorization": "Bearer " + self.token,
-            "Content-Type": "application/json",
-            "Notion-Version": "2022-06-28"}
+    def getHomework(self):
+        url = f'https://api.notion.com/v1/databases/{self.database_id}/query'
 
-    def read_database(self, database_id, headers):
-        readUrl = f"https://api.notion.com/v1/databases/{database_id}/query"
+        r = requests.post(url, headers={
+        "Authorization": f"Bearer {self.token}",
+        "Notion-Version": "2021-08-16"
+        })
 
-        res = requests.request("POST", readUrl, headers=headers)
-        data = res.json()
-        print(res.status_code)
+        result_dict = r.json()
+        homework_list_result = result_dict['results']
 
-        with open('./notion.json', 'w', encoding='utf8') as f:
-            json.dump(data, f, ensure_ascii=False)
+        homeworks_filtered = []
 
-        return data
+        for homework in homework_list_result:
+            homework_dict = self.mapNotionResultToHomework(homework)
 
-    def get_tasks_from_db(self, db_data):
-        length_of_table = len(db_data["results"])
-        for i in range(length_of_table):
-            if len(db_data["results"][i]["properties"]["Task"]["title"]) != 0:
-                task_name = db_data["results"][i]["properties"]["Task"]["title"][0]["plain_text"]
-                print(f"{i} - {task_name}")
+            tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+            if homework_dict['date'] == str(tomorrow):
+                homeworks_filtered.append(homework_dict['name'] + " " + f"**{homework_dict['type']}**")
+
+        return homeworks_filtered
+
+    def mapNotionResultToHomework(self, result):
+        # you can print result here and check the format of the answer.
+        homework_id = result['id']
+        properties = result['properties']
+        date = properties['Date']['date']['start']
+        name = properties['Name']['title'][0]['text']['content']
+        type = properties['Type']['select']['name']
+
+        return {
+            'id': homework_id,
+            'date': date,
+            'name': name,
+            'type': type,
+        }
 
     @commands.Cog.listener()
     async def on_ready(self):
-        self.db_data = self.read_database(self.database_id, self.headers)
-        print(self.get_tasks_from_db(self.db_data))
-
         print('Loaded notion.py!')
 
     @app_commands.command(name="zadania", description="See what is for tomorrow homework")
-    @ app_commands.checks.has_role("8c")
+    @app_commands.checks.has_role("8c")
     async def zadania(self, interaction: discord.Interaction):
-        await self.bot.embed(interaction, "", title="Coming soon :eyes:")
+        homework = self.getHomework()
+        if len(homework) == 0:
+            await self.bot.embed(interaction, "", title= "There is no homework for tomorrow :smile:")
+        else:
+            homework_formatted = ""
+            for word in homework:
+                homework_formatted += f"- {word}\n"
+            await self.bot.embed(interaction, homework_formatted, title="Homework for tomorrow:")
 
 
 async def setup(bot):
