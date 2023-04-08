@@ -14,7 +14,7 @@ class Funsbot(commands.AutoShardedBot):
         self.embed_color = 0x2F3136
 
     # Important embed function
-    async def embed(self, interaction: discord.Interaction, description: str, title: str = None, ephemeral: bool = False, view: discord.ui.View = None, footer: str = None):
+    async def embed(self, interaction: discord.Interaction, description: str, title: str = None, ephemeral: bool = False, view: discord.ui.View = None, footer: str = None, followup: bool = False):
         embed = discord.Embed(
             description=description, color=self.embed_color)
         if title is not None:
@@ -22,7 +22,10 @@ class Funsbot(commands.AutoShardedBot):
         if footer is not None:
             embed.set_footer(text=footer)
 
-        await interaction.response.send_message(embed=embed, ephemeral=ephemeral, view=view)
+        if followup is True:
+            await interaction.followup.send(embed=embed, ephemeral=ephemeral)
+        else:
+            await interaction.response.send_message(embed=embed, ephemeral=ephemeral, view=view)
 
 
 intents = discord.Intents().all()

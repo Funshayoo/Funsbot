@@ -5,12 +5,18 @@ from discord import app_commands
 from yt_dlp import YoutubeDL
 
 from asyncio import run_coroutine_threadsafe, sleep
-from threading import Timer
+
 
 class Options:
     YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True'}
     FFMPEG_OPTIONS = {
-                'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+        'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+
+
+# class Song:
+#     nowplaying = ""
+#     nowplaying_source = None
+
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -55,7 +61,7 @@ class Music(commands.Cog):
             self.is_playing = False
 
     def song_finished(self):
-        if self.is_looped == True:
+        if self.is_looped is True:
             self.vc.play(discord.FFmpegPCMAudio(
                 self.nowplayingsource, **Options.FFMPEG_OPTIONS), after=lambda e: self.song_finished())
         elif len(self.music_queue) > 0:
@@ -74,7 +80,6 @@ class Music(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(song="What to play")
     async def play(self, interaction: discord.Interaction, song: str):
-        # await interaction.response.defer()
 
         query = " ".join(song)
 
@@ -85,19 +90,21 @@ class Music(commands.Cog):
         elif self.is_paused:
             self.vc.resume()
         else:
+            await interaction.response.defer()
             song = self.search_yt(query)
 
             if type(song) == type(True):
-                await self.bot.embed(interaction, "Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format", ephemeral=True)
-            else:
-                self.music_queue.append([song, user_voice.channel])
-                self.vc = await self.music_queue[0][1].connect()
+                await self.bot.embed(interaction, "Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format", followup=True)
+                return
 
-                if self.vc == None:
-                    await self.bot.embed(interaction, "Could not connect to voice channel", ephemeral=True)
-                else:
-                    self.play_music()
-                    await self.bot.embed(interaction, title = "Added song to the queue:" , description = song['title'])
+            self.music_queue.append([song, user_voice.channel])
+            self.vc = await self.music_queue[0][1].connect()
+
+            if self.vc is None:
+                await self.bot.embed(interaction, "Could not connect to voice channel", followup=True)
+            else:
+                self.play_music()
+                await self.bot.embed(interaction, title="Added song to the queue:", description=song['title'], followup=True)
 
     @app_commands.command(name="pause_on_off", description="Pauses the current song being played")
     @app_commands.guild_only()
@@ -116,7 +123,7 @@ class Music(commands.Cog):
     @app_commands.command(name="skip", description="Skips the current song being played")
     @app_commands.guild_only()
     async def skip(self, interaction: discord.Interaction):
-        if self.vc != None and self.vc:
+        if self.vc is not None and self.vc:
             self.vc.stop()
             # ! try to play next in the queue if it exists
             await self.play_music(interaction)
@@ -140,7 +147,7 @@ class Music(commands.Cog):
     @app_commands.command(name="queue_clear", description="Stops the music and clears the queue")
     @app_commands.guild_only()
     async def queue_clear(self, interaction: discord.Interaction):
-        if self.vc != None and self.is_playing:
+        if self.vc is not None and self.is_playing:
             self.vc.stop()
         self.music_queue = []
         await self.bot.embed(interaction, "Music queue cleared")
@@ -170,10 +177,11 @@ class Music(commands.Cog):
             await self.bot.embed(interaction, "Connect to the voice channel", ephemeral=True)
         else:
             self.is_looped ^= True
-            if self.is_looped == False:
+            if self.is_looped is False:
                 await self.bot.embed(interaction, "Loop is now off")
             else:
                 await self.bot.embed(interaction, "Loop is now on")
+
 
 async def setup(bot):
     await bot.add_cog(Music(bot))
