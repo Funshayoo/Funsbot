@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 
 import random
-import datetime
+import datetime  # add one game a day limit
 import aiosqlite
 from config import Config
 
@@ -129,7 +129,7 @@ class Wordle(commands.Cog):
 
     @ app_commands.command(name="wordle", description="Play a game of wordle")
     @ app_commands.describe(guess="Your guess")
-    async def wordle(self, interaction: discord.Interaction,  guess: str):
+    async def wordle(self, interaction: discord.Interaction, guess: str):
         user = interaction.user
 
         async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
@@ -142,7 +142,7 @@ class Wordle(commands.Cog):
 
             await wordle_db.commit()
 
-        if self.is_playing == False:
+        if self.is_playing is False:
             await self.make_new_game(interaction)
 
         if not self.process_guess(guess):
@@ -170,7 +170,7 @@ class Wordle(commands.Cog):
                     games = stats[0]
                     wins = stats[1]
                     losses = stats[2]
-                except:
+                except Exception:
                     games = 0
                     wins = 0
                     losses = 0

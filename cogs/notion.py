@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from discord.ext.commands import has_permissions
 
 from config import Config
 
@@ -22,8 +21,8 @@ class Notion(commands.Cog):
         url = f'https://api.notion.com/v1/databases/{self.database_id}/query'
 
         r = requests.post(url, headers={
-        "Authorization": f"Bearer {self.token}",
-        "Notion-Version": "2021-08-16"
+            "Authorization": f"Bearer {self.token}",
+            "Notion-Version": "2021-08-16"
         })
 
         result_dict = r.json()
@@ -35,8 +34,9 @@ class Notion(commands.Cog):
             homework_dict = self.mapNotionResultToHomework(homework)
 
             tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-            if homework_dict['date'] == str(tomorrow):
-                homeworks_filtered.append(homework_dict['name'] + " " + f"**{homework_dict['type']}**")
+            if homework_dict['date'] is tomorrow:
+                homeworks_filtered.append(
+                    homework_dict['name'] + " " + f"**{homework_dict['type']}**")
 
         return homeworks_filtered
 
@@ -64,7 +64,7 @@ class Notion(commands.Cog):
     async def zadania(self, interaction: discord.Interaction):
         homework = self.getHomework()
         if len(homework) == 0:
-            await self.bot.embed(interaction, "", title= "There is no homework for tomorrow :smile:")
+            await self.bot.embed(interaction, "", title="There is no homework for tomorrow :smile:")
         else:
             homework_formatted = ""
             for word in homework:

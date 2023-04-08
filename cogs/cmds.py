@@ -1,9 +1,6 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from discord.ext.commands import has_permissions
-
-import asyncio
 
 
 class Cmds(commands.Cog):
@@ -83,7 +80,7 @@ class Cmds(commands.Cog):
         channel = self.bot.get_channel(1053696319325229087)
         guild = interaction.guild
 
-        if message == None:
+        if message is None:
             return
         else:
             embed = discord.Embed(
