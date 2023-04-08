@@ -10,7 +10,8 @@ Funsbot is a fun Discord bot with a wide range of features for your server. Whet
 - ChatGPT integration
 
 ## Requirements
-> Python 3.10 or newer, install all the requirements using the script:
+> Python 3.10 or newer, install all the requirements
+
 > FFMPEG installed 
 
 ## Installation 
