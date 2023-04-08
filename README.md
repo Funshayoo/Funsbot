@@ -4,16 +4,14 @@ Funsbot is a fun Discord bot with a wide range of features for your server. Whet
 
 ## Features
 - Playing music from youtube
-- Wordle
+- Wordle game
 - Moderation tools
 - Fun commands
+- ChatGPT integration
 
 ## Requirements
 > Python 3.10 or newer, install all the requirements using the script:
-
-```shell
-./pipupgrade.sh
-```
+> FFMPEG installed 
 
 ## Installation 
 To get started, first clone this repository to somewhere on your `packpath`, e.g.:
@@ -21,6 +19,7 @@ To get started, first clone this repository to somewhere on your `packpath`, e.g
 > Unix, Linux Installation
 
 ```shell
+pip3 install -r requirements.txt
 python3 main.py
 ```
 
