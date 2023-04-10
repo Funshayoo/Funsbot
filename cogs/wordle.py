@@ -3,7 +3,6 @@ from discord.ext import commands
 from discord import app_commands
 
 import random
-import datetime  # add one game a day limit
 import aiosqlite
 from config import Config
 
@@ -142,7 +141,7 @@ class Wordle(commands.Cog):
 
             await wordle_db.commit()
 
-        if self.is_playing is False:
+        if not self.is_playing:
             await self.make_new_game(interaction)
 
         if not self.process_guess(guess):
@@ -183,7 +182,7 @@ class Wordle(commands.Cog):
             if wins == 0:
                 win_ratio = 0
             else:
-                win_ratio = round(wins / games * 100)
+                win_ratio = round(100 * wins / games)
 
             await self.bot.embed(interaction, f"Games: {games} \n Wins: {wins} \n Losses: {losses}\n Win ratio: {win_ratio}%", title="Your score:")
 
