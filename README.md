@@ -12,7 +12,7 @@ Funsbot is a fun Discord bot with a wide range of features for your server. Whet
 ## Requirements
 > Python 3.10 or newer, install all the requirements
 
-> FFMPEG installed 
+> Ffmpeg installed 
 
 ## Installation 
 To get started, first clone this repository to somewhere on your `packpath`, e.g.:
@@ -27,6 +27,7 @@ python3 main.py
 > Docker installation
 
 ```shell
+docker run -e TOKEN=[YOUR TOKEN] -d 
 ```
 
 ## Contributors
