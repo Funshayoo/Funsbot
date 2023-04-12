@@ -34,9 +34,8 @@ class Notion(commands.Cog):
             homework_dict = self.mapNotionResultToHomework(homework)
 
             tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-            if homework_dict['date'] is tomorrow:
-                homeworks_filtered.append(
-                    homework_dict['name'] + " " + f"**{homework_dict['type']}**")
+            if homework_dict['date'] == str(tomorrow):
+                homeworks_filtered.append(homework_dict['name'] + " " + f"**{homework_dict['type']}**")
 
         return homeworks_filtered
 
