@@ -40,7 +40,7 @@ class Notion(commands.Cog):
             homework_list = self.format_homework(homework_list)
             return homework_list
         else:
-            return
+            return None
 
     def mapNotionResultToHomework(self, result):
         # you can print result here and check the format of the answer.
