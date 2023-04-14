@@ -35,8 +35,8 @@ class Notion(commands.Cog):
             tomorrow = datetime.date.today() + datetime.timedelta(days=1)
             if homework_dict['date'] == str(tomorrow):
                 homework_list.append(homework_dict['name'] + " " + f"**{homework_dict['type']}**")
-
-        homework_list = self.format_homework(homework_list)
+        if len(homework_list) > 0:
+            homework_list = self.format_homework(homework_list)
 
         return homework_list
 
@@ -47,12 +47,14 @@ class Notion(commands.Cog):
         date = properties['Date']['date']['start']
         name = properties['Name']['title'][0]['text']['content']
         type = properties['Type']['select']['name']
+        url = properties['URL']['url']
 
         return {
             'id': homework_id,
             'date': date,
             'name': name,
             'type': type,
+            'url': url,
         }
 
     # def bubble_sort(self, array):
@@ -63,10 +65,10 @@ class Notion(commands.Cog):
     #                 array[j], array[j + 1] = array[j + 1], array[j]
     #     return array
 
-    def format_homework(self, homework):
+    def format_homework(self, homework, url):
         homework_formatted = ""
-        for word in homework:
-            homework_formatted += f"- {word}\n"
+        for i in range(homework):
+            homework_formatted += f"- {homework[i]}\n"
         return homework_formatted
 
     @commands.Cog.listener()
@@ -74,11 +76,10 @@ class Notion(commands.Cog):
         print('Loaded notion.py!')
 
     @app_commands.command(name="zadania", description="See what is for tomorrow homework")
-    @app_commands.checks.has_role("8c")
     async def zadania(self, interaction: discord.Interaction):
         homework = self.getHomework()
         if len(homework) == 0:
-            await self.bot.embed(interaction, "", title="There is no homework for tomorrow :smile:")
+            await self.bot.embed(interaction, "", title="There is no homework for tomorrow <:pog:1007719591276990655>")
         else:
             await self.bot.embed(interaction, homework, title="Homework for tomorrow:")
 
