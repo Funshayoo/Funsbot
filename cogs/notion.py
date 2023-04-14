@@ -35,10 +35,12 @@ class Notion(commands.Cog):
             tomorrow = datetime.date.today() + datetime.timedelta(days=1)
             if homework_dict['date'] == str(tomorrow):
                 homework_list.append(homework_dict['name'] + " " + f"**{homework_dict['type']}**")
+
         if len(homework_list) > 0:
             homework_list = self.format_homework(homework_list)
-
-        return homework_list
+            return homework_list
+        else:
+            return
 
     def mapNotionResultToHomework(self, result):
         # you can print result here and check the format of the answer.
@@ -47,28 +49,27 @@ class Notion(commands.Cog):
         date = properties['Date']['date']['start']
         name = properties['Name']['title'][0]['text']['content']
         type = properties['Type']['select']['name']
-        url = properties['URL']['url']
 
         return {
             'id': homework_id,
             'date': date,
             'name': name,
             'type': type,
-            'url': url,
         }
 
-    # def bubble_sort(self, array):
-    #     n = len(array)
-    #     for i in range(n):
-    #         for j in range(0, n - i - 1):
-    #             if array[j] > array[j + 1]:
-    #                 array[j], array[j + 1] = array[j + 1], array[j]
-    #     return array
+    def quick_sort(self, array):
+        if len(array) <= 1:
+            return array
+        else:
+            pivot = array[0]
+            less = [i for i in array[1:] if i < pivot]
+            greater = [i for i in array[1:] if i >= pivot]
+            return self.quick_sort(less) + [pivot] + self.quick_sort(greater)
 
-    def format_homework(self, homework, url):
+    def format_homework(self, homework):
         homework_formatted = ""
-        for i in range(homework):
-            homework_formatted += f"- {homework[i]}\n"
+        for word in homework:
+            homework_formatted += f"- {word}\n"
         return homework_formatted
 
     @commands.Cog.listener()
@@ -76,9 +77,10 @@ class Notion(commands.Cog):
         print('Loaded notion.py!')
 
     @app_commands.command(name="zadania", description="See what is for tomorrow homework")
+    @app_commands.checks.has_role("8c")
     async def zadania(self, interaction: discord.Interaction):
         homework = self.getHomework()
-        if len(homework) == 0:
+        if homework is None:
             await self.bot.embed(interaction, "", title="There is no homework for tomorrow <:pog:1007719591276990655>")
         else:
             await self.bot.embed(interaction, homework, title="Homework for tomorrow:")
