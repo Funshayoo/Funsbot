@@ -39,7 +39,6 @@ class Fun(commands.Cog):
         await self.bot.embed(interaction, "No bitches <:KEKW:1007719515620126852>")
 
     # ? manho command
-
     @app_commands.command(name="manho", description="<3 manho")
     async def manho(self, interaction: discord.Interaction):
         await self.bot.embed(interaction, "Kocham manho <:PepeHappy:1007638220131024997>")
