@@ -13,26 +13,25 @@ class Options:
         'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
 
-# class Song:
-#     nowplaying = ""
-#     nowplaying_source = None
+class Song:
+    nowplaying = ""
+    nowplaying_source = None
+
+
+class MusicClient:
+    vc = None
+
+    # 2d array containing [song, channel]
+    music_queue = []
+
+    is_playing = False
+    is_paused = False
+    is_looped = False
 
 
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-        # * all the music related stuff
-        self.is_playing = False
-        self.is_paused = False
-        self.is_looped = False
-
-        # ! 2d array containing [song, channel]
-        self.music_queue = []
-
-        self.vc = None
-        self.nowplayingsong = ""
-        self.nowplayingsource = None
 
     # ? searching the item on youtube
     def search_yt(self, item):
@@ -45,32 +44,32 @@ class Music(commands.Cog):
         return {'source': info['url'], 'title': info['title']}
 
     def play_music(self):
-        if len(self.music_queue) > 0:
-            self.is_playing = True
+        if len(MusicClient.music_queue) > 0:
+            MusicClient.is_playing = True
 
             # ! remove the first element as you are currently playing it
-            self.nowplayingsong = self.music_queue[0][0]['title']
-            self.nowplayingsource = self.music_queue[0][0]['source']
-            self.music_queue.pop(0)
+            Song.nowplaying = MusicClient.music_queue[0][0]['title']
+            Song.nowplaying_source = MusicClient.music_queue[0][0]['source']
+            MusicClient.music_queue.pop(0)
 
-            self.vc.play(discord.FFmpegPCMAudio(
-                self.nowplayingsource, **Options.FFMPEG_OPTIONS), after=lambda e: self.song_finished())
-            self.vc.pause()
-            self.vc.resume()
+            MusicClient.vc.play(discord.FFmpegPCMAudio(
+                Song.nowplaying_source, **Options.FFMPEG_OPTIONS), after=lambda e: self.song_finished())
+            MusicClient.vc.pause()
+            MusicClient.vc.resume()
         else:
-            self.is_playing = False
+            MusicClient.is_playing = False
 
     def song_finished(self):
-        if self.is_looped is True:
-            self.vc.play(discord.FFmpegPCMAudio(
-                self.nowplayingsource, **Options.FFMPEG_OPTIONS), after=lambda e: self.song_finished())
-        elif len(self.music_queue) > 0:
+        if MusicClient.is_looped is True:
+            MusicClient.vc.play(discord.FFmpegPCMAudio(
+                Song.nowplaying_source, **Options.FFMPEG_OPTIONS), after=lambda e: self.song_finished())
+        elif len(MusicClient.music_queue) > 0:
             self.play_music()
         else:
-            self.is_playing = False
-            self.is_paused = False
+            MusicClient.is_playing = False
+            MusicClient.is_paused = False
             run_coroutine_threadsafe(
-                self.vc.disconnect(), self.bot.loop)
+                MusicClient.vc.disconnect(), self.bot.loop)
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -87,8 +86,8 @@ class Music(commands.Cog):
         if user_voice is None:
             # ! you need to be connected so that the bot knows where to go
             await self.bot.embed(interaction, "Connect to the voice channel", ephemeral=True)
-        elif self.is_paused:
-            self.vc.resume()
+        elif MusicClient.is_paused:
+            MusicClient.vc.resume()
         else:
             await interaction.response.defer()
             song = self.search_yt(query)
@@ -97,34 +96,34 @@ class Music(commands.Cog):
                 await self.bot.embed(interaction, "Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format", followup=True)
                 return
 
-            self.music_queue.append([song, user_voice.channel])
-            self.vc = await self.music_queue[0][1].connect()
+            MusicClient.music_queue.append([song, user_voice.channel])
+            MusicClient.vc = await MusicClient.music_queue[0][1].connect()
 
-            if self.vc is None:
+            if MusicClient.vc is None:
                 await self.bot.embed(interaction, "Could not connect to voice channel", followup=True)
             else:
-                self.play_music()
                 await self.bot.embed(interaction, title="Added song to the queue:", description=song['title'], followup=True)
+                self.play_music()
 
     @app_commands.command(name="pause_on_off", description="Pauses the current song being played")
     @app_commands.guild_only()
     async def pause_on_off(self, interaction: discord.Interaction):
-        if self.is_playing:
-            self.is_playing = False
-            self.is_paused = True
-            self.vc.pause()
+        if MusicClient.is_playing:
+            MusicClient.is_playing = False
+            MusicClient.is_paused = True
+            MusicClient.vc.pause()
             await self.bot.embed(interaction, "Pause on")
-        elif self.is_paused:
-            self.is_paused = False
-            self.is_playing = True
-            self.vc.resume()
+        elif MusicClient.is_paused:
+            MusicClient.is_paused = False
+            MusicClient.is_playing = True
+            MusicClient.vc.resume()
             await self.bot.embed(interaction, "Pause off")
 
     @app_commands.command(name="skip", description="Skips the current song being played")
     @app_commands.guild_only()
     async def skip(self, interaction: discord.Interaction):
-        if self.vc is not None and self.vc:
-            self.vc.stop()
+        if MusicClient.vc is not None and self.vc:
+            MusicClient.vc.stop()
             # ! try to play next in the queue if it exists
             await self.play_music(interaction)
             await self.bot.embed(interaction, "Song skipped")
@@ -133,11 +132,11 @@ class Music(commands.Cog):
     @app_commands.guild_only()
     async def queue(self, interaction: discord.Interaction):
         retval = ""
-        for i in range(0, len(self.music_queue)):
+        for i in range(0, len(MusicClient.music_queue)):
             # ? display a max of 5 songs in the current queue
             if (i > 4):
                 break
-            retval += self.music_queue[i][0]['title'] + "\n"
+            retval += MusicClient.music_queue[i][0]['title'] + "\n"
 
         if retval != "":
             await self.bot.embed(interaction, retval, title="Queue:")
@@ -147,26 +146,27 @@ class Music(commands.Cog):
     @app_commands.command(name="queue_clear", description="Stops the music and clears the queue")
     @app_commands.guild_only()
     async def queue_clear(self, interaction: discord.Interaction):
-        if self.vc is not None and self.is_playing:
-            self.vc.stop()
-        self.music_queue = []
+        if MusicClient.vc is not None and MusicClient.is_playing:
+            MusicClient.vc.stop()
+        MusicClient.music_queue = []
         await self.bot.embed(interaction, "Music queue cleared")
 
     @app_commands.command(name="leave", description="Kick the bot from voice chat")
     @app_commands.guild_only()
     async def leave(self, interaction: discord.Interaction):
-        self.is_playing = False
-        self.is_paused = False
-        await self.vc.disconnect()
+        MusicClient.is_playing = False
+        MusicClient.is_paused = False
+        MusicClient.music_queue = []
+        await MusicClient.vc.disconnect()
         await self.bot.embed(interaction, "Bot left the voice chat")
 
     @app_commands.command(name="nowplaying", description="Prints the current song name")
     @app_commands.guild_only()
     async def nowplaying(self, interaction: discord.Interaction):
-        if interaction.user.voice is None or self.is_playing is False:
+        if interaction.user.voice is None or MusicClient.is_playing is False:
             await self.bot.embed(interaction, "No song is playing")
 
-        await self.bot.embed(interaction, self.nowplayingsong, title="Now Playing:")
+        await self.bot.embed(interaction, Song.nowplaying, title="Now Playing:")
 
     @app_commands.command(name="loop", description="Loops the song")
     @app_commands.guild_only()
@@ -176,8 +176,8 @@ class Music(commands.Cog):
             # ! you need to be connected so that the bot knows where to go
             await self.bot.embed(interaction, "Connect to the voice channel", ephemeral=True)
         else:
-            self.is_looped ^= True
-            if self.is_looped is False:
+            MusicClient.is_looped ^= True
+            if MusicClient.is_looped is False:
                 await self.bot.embed(interaction, "Loop is now off")
             else:
                 await self.bot.embed(interaction, "Loop is now on")
