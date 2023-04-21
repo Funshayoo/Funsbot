@@ -79,31 +79,28 @@ class Music(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(song="What to play")
     async def play(self, interaction: discord.Interaction, song: str):
-
         query = " ".join(song)
 
         user_voice = interaction.user.voice
         if user_voice is None:
             # ! you need to be connected so that the bot knows where to go
             await self.bot.embed(interaction, "Connect to the voice channel", ephemeral=True)
-        elif MusicClient.is_paused:
-            MusicClient.vc.resume()
         else:
             await interaction.response.defer()
-            song = self.search_yt(query)
 
+            song = self.search_yt(query)
             if type(song) == type(True):
                 await self.bot.embed(interaction, "Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format", followup=True)
-                return
-
-            MusicClient.music_queue.append([song, user_voice.channel])
-            MusicClient.vc = await MusicClient.music_queue[0][1].connect()
-
-            if MusicClient.vc is None:
-                await self.bot.embed(interaction, "Could not connect to voice channel", followup=True)
             else:
+                MusicClient.music_queue.append([song, user_voice.channel])
+
+                if MusicClient.vc is None or not MusicClient.vc.is_connected():
+                    MusicClient.vc = await MusicClient.music_queue[0][1].connect()
+
+                if MusicClient.is_playing is False:
+                    self.play_music()
+
                 await self.bot.embed(interaction, title="Added song to the queue:", description=song['title'], followup=True)
-                self.play_music()
 
     @app_commands.command(name="pause_on_off", description="Pauses the current song being played")
     @app_commands.guild_only()
@@ -122,11 +119,12 @@ class Music(commands.Cog):
     @app_commands.command(name="skip", description="Skips the current song being played")
     @app_commands.guild_only()
     async def skip(self, interaction: discord.Interaction):
-        if MusicClient.vc is not None and self.vc:
-            MusicClient.vc.stop()
-            # ! try to play next in the queue if it exists
-            await self.play_music(interaction)
-            await self.bot.embed(interaction, "Song skipped")
+        if MusicClient.vc is not None and MusicClient.vc.is_connected() and len(MusicClient.music_queue) > 0:
+            MusicClient.vc.pause()
+            self.play_music()
+            await self.bot.embed(interaction, title="Song skipped", description=f"Nowplaying: {Song.nowplaying}")
+        else:
+            await self.bot.embed(interaction, "No music in queue")
 
     @app_commands.command(name="queue", description="Displays the queue")
     @app_commands.guild_only()
