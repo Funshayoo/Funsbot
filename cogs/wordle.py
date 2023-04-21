@@ -87,7 +87,7 @@ class Wordle(commands.Cog):
                 await wordle_cursor.execute(sql, val)
 
             await wordle_db.commit()
-        await self.bot.embed(interaction, f"The answer was: **{self.answer}**", title=f"{interaction.user} guessed the word!")
+        await self.bot.embed(interaction, f"The answer was: **{self.answer}**", title=f"{interaction.user} guessed the word!", followup=True)
 
     async def remove_try(self, interaction):
         user = interaction.user
@@ -120,7 +120,7 @@ class Wordle(commands.Cog):
 
             await wordle_db.commit()
         self.tries_left = 5
-        await self.bot.embed(interaction, f"The answer was: {self.answer}", "Game over:")
+        await self.bot.embed(interaction, f"The answer was: {self.answer}", "Game over:", followup=True)
 
     @ commands.Cog.listener()
     async def on_ready(self):
@@ -130,6 +130,8 @@ class Wordle(commands.Cog):
     @ app_commands.describe(guess="Your guess")
     async def wordle(self, interaction: discord.Interaction, guess: str):
         user = interaction.user
+
+        await interaction.response.defer()
 
         async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
             async with wordle_db.cursor() as wordle_cursor:
@@ -149,13 +151,12 @@ class Wordle(commands.Cog):
         else:
             if guess == self.answer:
                 await self.user_won(interaction)
-
             elif self.tries_left == 1:
                 await self.game_over(interaction)
             else:
                 await self.remove_try(interaction)
                 colored_word = self.generate_colored_word(guess, self.answer)
-                await self.bot.embed(interaction, f"{colored_word} {guess}", title="Your guess:", footer=f"tries left: {self.tries_left}")
+                await self.bot.embed(interaction, f"{colored_word} {guess}", title="Your guess:", footer=f"tries left: {self.tries_left}", followup=True)
 
     @ app_commands.command(name="wordle_stats", description="View your wordle stats")
     async def wordle_stats(self, interaction: discord.Interaction):
