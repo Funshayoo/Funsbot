@@ -24,12 +24,6 @@ pip3 install -r requirements.txt
 python3 main.py
 ```
 
-> Docker installation
-
-```shell
-docker run -e TOKEN=[YOUR TOKEN] -d 
-```
-
 ## Contributors
 Contributions, feedback, and bug reports are welcome! Feel free to check out our [issues page](https://github.com/Funshayoo/Funsbot/issues) to find out what you could do! A big thanks to all those who contribute to the project ❤
 
