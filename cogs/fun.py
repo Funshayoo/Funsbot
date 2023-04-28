@@ -16,17 +16,16 @@ class Fun(commands.Cog):
         print('Loaded fun.py!')
 
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message: discord.Message):
         # ? funni gówno joke
         answer_array = ['gówno jeden zero', 'jajco', 'chujów sto']
         co_array = ['co', 'co?']
 
-        if (message.author == self.bot):
+        if message.author.bot:
             return
+
         elif message.content.lower() in co_array:
-            embed = discord.Embed(title="", description=random.choice(
-                answer_array), color=self.bot_embed_color)
-            await message.reply(embed=embed)
+            await message.channel.send(random.choice(answer_array))
 
     # ? flip command
     @app_commands.command(name="flip", description="Flip a coin")
