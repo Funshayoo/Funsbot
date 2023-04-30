@@ -33,6 +33,11 @@ class Ai(commands.Cog):
 
         await self.bot.embed(interaction, title="ChatGPT response: ", description=response.choices[0].text, followup=True)
 
+    # @app_commands.command(name="picture", description="generate a picture from prompt")
+    # @app_commands.describe(prompt="Enter your prompt")
+    # async def picture(self, interaction: discord.Interaction, prompt: str):
+    #     await interaction.response.defer()
+
 
 async def setup(bot):
     await bot.add_cog(Ai(bot))
