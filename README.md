@@ -15,10 +15,6 @@ Funsbot is a fun Discord bot with a wide range of features for your server. Whet
 > Ffmpeg installed 
 
 ## Installation 
-To get started, first clone this repository to somewhere on your `packpath`, e.g.:
-
-> Unix, Linux Installation
-
 ```shell
 pip3 install -r requirements.txt
 python3 main.py
