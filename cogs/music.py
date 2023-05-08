@@ -79,16 +79,20 @@ class Music(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(song="What to play")
     async def play(self, interaction: discord.Interaction, song: str):
-        query = " ".join(song)
-
         user_voice = interaction.user.voice
         if user_voice is None:
             # ! you need to be connected so that the bot knows where to go
             await self.bot.embed(interaction, "Connect to the voice channel", ephemeral=True)
         else:
             await interaction.response.defer()
+            youtube_strings = ["https://www.youtube.com/watch?v=", "https://youtu.be/"]
+            for i in youtube_strings:
+                if song.startswith(i):
+                    song.replace(i, '')
 
-            song = self.search_yt(query)
+            # query = " ".join(song)
+            song = self.search_yt(song)
+            print(song)
             if type(song) == type(True):
                 await self.bot.embed(interaction, "Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format", followup=True)
             else:
