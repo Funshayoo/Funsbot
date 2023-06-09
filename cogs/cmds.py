@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
+from config import Config
 
 
 class Cmds(commands.Cog):
@@ -77,7 +78,7 @@ class Cmds(commands.Cog):
     @app_commands.default_permissions(administrator=True)
     @app_commands.describe(title="What title", message="What to say")
     async def announce(self, interaction: discord.Interaction, title: str, message: str):
-        channel = self.bot.get_channel(1053696319325229087)
+        channel = self.bot.get_channel(Config.DISCORD_ANNOUNCEMENT_CHANNEL)
         guild = interaction.guild
 
         if message is None:
