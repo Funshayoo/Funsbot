@@ -4,4 +4,4 @@ jokeapi==1.0.5
 openai==0.27.3
 python-dotenv==1.0.0
 requests==2.31.0
-yt_dlp==2023.3.4
+yt_dlp==2023.7.6
