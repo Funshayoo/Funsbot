@@ -17,7 +17,7 @@ class Database(commands.Cog):
 
         async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
             async with wordle_db.cursor() as wordle_cursor:
-                await wordle_cursor.execute("CREATE TABLE IF NOT EXISTS wordle (user_id INTEGER, todays_word STRING, tries INTEGER, game_started BOOLEAN, games INTEGER, wins INTEGER, losses INTEGER)")
+                await wordle_cursor.execute("CREATE TABLE IF NOT EXISTS wordle (user_id INTEGER, answer STRING, tries_left INTEGER, game_started BOOLEAN, games_played INTEGER, wins INTEGER, losses INTEGER)")
             await wordle_db.commit()
 
     @commands.Cog.listener()
@@ -32,8 +32,8 @@ class Database(commands.Cog):
                 data = await wordle_cursor.fetchone()
                 if data is None:
                     sql = (
-                        "INSERT INTO wordle (user_id, todays_word, tries, game_started, games, wins, losses) VALUES (?, ?, ?, ?, ?, ?, ?)")
-                    val = (user.id, "", 0, False, 0, 0, 0)
+                        "INSERT INTO wordle (user_id, answer, tries_left, game_started, games_played, wins, losses) VALUES (?, ?, ?, ?, ?, ?, ?)")
+                    val = (user.id, "", 5, False, 0, 0, 0)
                     await wordle_cursor.execute(sql, val)
             await wordle_db.commit()
 
