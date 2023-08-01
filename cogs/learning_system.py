@@ -8,8 +8,10 @@ import requests
 import json
 import datetime
 
+from py_librus_api import Librus
 
-class Notion(commands.Cog):
+
+class Learning_system(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -24,25 +26,24 @@ class Notion(commands.Cog):
             "Notion-Version": "2021-08-16"
         })
 
-        result_dict = r.json()
-        homework_list_result = result_dict['results']
+        request_list = r.json()
+        request_list = request_list['results']
 
-        homework_list = []
+        homework_list = ""
 
-        for homework in homework_list_result:
-            homework_dict = self.mapNotionResultToHomework(homework)
+        for homework in request_list:
+            homework_data = self.GetHomeworkData(homework)
 
             tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-            if homework_dict['date'] == str(tomorrow):
-                homework_list.append(homework_dict['name'] + " " + f"**{homework_dict['type']}**")
+            if homework_data['date'] == str(tomorrow):
+                homework_list += "- " + homework_data['name'] + " " + f"**{homework_data['type']}**"
 
         if len(homework_list) > 0:
-            homework_list = self.format_homework(homework_list)
             return homework_list
         else:
             return None
 
-    def mapNotionResultToHomework(self, result):
+    def GetHomeworkData(self, result):
         # you can print result here and check the format of the answer.
         homework_id = result['id']
         properties = result['properties']
@@ -57,24 +58,9 @@ class Notion(commands.Cog):
             'type': type,
         }
 
-    def quick_sort(self, array):
-        if len(array) <= 1:
-            return array
-        else:
-            pivot = array[0]
-            less = [i for i in array[1:] if i < pivot]
-            greater = [i for i in array[1:] if i >= pivot]
-            return self.quick_sort(less) + [pivot] + self.quick_sort(greater)
-
-    def format_homework(self, homework):
-        homework_formatted = ""
-        for word in homework:
-            homework_formatted += f"- {word}\n"
-        return homework_formatted
-
     @commands.Cog.listener()
     async def on_ready(self):
-        print('Loaded notion.py!')
+        print('Loaded learning_system.py!')
 
     @app_commands.command(name="zadania", description="See what is for tomorrow homework")
     @app_commands.checks.has_role("8c")
@@ -85,6 +71,11 @@ class Notion(commands.Cog):
         else:
             await self.bot.embed(interaction, homework, title="Homework for tomorrow:")
 
+    # @app_commands.command(name="numerek", description="Get the lucky number")
+    # @app_commands.checks.has_role("8c")
+    # async def numerek(self, interaction: discord.Interaction):
+    #    await self.bot.embed(interaction, get_lucky_number(), title="Szczęśliwy numerek na dziś to:")
+
 
 async def setup(bot):
-    await bot.add_cog(Notion(bot))
+    await bot.add_cog(Learning_system(bot))
