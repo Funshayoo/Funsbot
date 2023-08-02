@@ -6,6 +6,12 @@ from yt_dlp import YoutubeDL
 
 from asyncio import run_coroutine_threadsafe, sleep
 
+import base64
+from requests import post
+import json
+
+from config import Config
+
 
 class Options:
     YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True'}
@@ -33,7 +39,24 @@ class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    # def spotify_get_token(self):
+    #     auth_string = Config.SPOTIFY_CLIENT_ID + ":" + Config.SPOTIFY_SECRET
+    #     auth_bytes = auth_string.encode('utf-8')
+    #     auth_base64 = str(base64.b64encode(auth_bytes), "utf-8")
+    #
+    #     url = "https://accounts.spotify.com/api/token"
+    #     headers = {
+    #         "Authorization": "Basic " + auth_base64,
+    #         "Content-Type": "application/x-www-form-urlencoded",
+    #     }
+    #     data = {"grant_type": "client_credentials"}
+    #     result = post(url, headers=headers, data=data)
+    #     json_result = json.loads(result.content)
+    #     token = json_result["access_token"]
+    #     return token
+
     # ? searching the item on youtube
+
     def search_yt(self, item):
         with YoutubeDL(Options.YDL_OPTIONS) as ydl:
             try:
@@ -183,6 +206,11 @@ class Music(commands.Cog):
                 await self.bot.embed(interaction, "Loop is now off")
             else:
                 await self.bot.embed(interaction, "Loop is now on")
+
+    # @app_commands.command(name="spotify", description="Spotify command")
+    # @app_commands.guild_only()
+    # async def spotify(self, interaction: discord.Interaction):
+    #     await self.bot.embed(interaction, "Spotify command")
 
 
 async def setup(bot):
