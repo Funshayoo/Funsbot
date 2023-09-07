@@ -76,14 +76,14 @@ class Music(commands.Cog):
     async def on_ready(self):
         print('Loaded music.py!')
 
-    @app_commands.command(name="play", description="Plays a selected song from youtube")
+    @app_commands.command(name="muzyka", description="wlacz muzyke")
     @app_commands.guild_only()
-    @app_commands.describe(song="What to play")
+    @app_commands.describe(song="link z youtuba lub tytul")
     async def play(self, interaction: discord.Interaction, song: str):
         user_voice = interaction.user.voice
         if user_voice is None:
             # ! you need to be connected so that the bot knows where to go
-            await self.bot.embed(interaction, "Connect to the voice channel", ephemeral=True)
+            await self.bot.embed(interaction, "Dolacz do kanalu glosowego", ephemeral=True)
         else:
             await interaction.response.defer()
             youtube_strings = [
@@ -96,7 +96,7 @@ class Music(commands.Cog):
             song = self.search_yt(song)
             print(song)
             if type(song) == type(True):
-                await self.bot.embed(interaction, "Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format", followup=True)
+                await self.bot.embed(interaction, "Nieudalo sie odtworzyc utworu", followup=True)
             else:
                 MusicClient.music_queue.append([song, user_voice.channel])
 
@@ -106,33 +106,33 @@ class Music(commands.Cog):
                 if MusicClient.is_playing is False:
                     self.play_music()
 
-                await self.bot.embed(interaction, title="Added song to the queue:", description=song['title'], followup=True)
+                await self.bot.embed(interaction, title="Utwor dodany do kolejki:", description=song['title'], followup=True)
 
-    @app_commands.command(name="pause_on_off", description="Pauses the current song being played")
+    @app_commands.command(name="zatrzymaj_wznow", description="Zatrzymuje lub puszcza utwor")
     @app_commands.guild_only()
     async def pause_on_off(self, interaction: discord.Interaction):
         if MusicClient.is_playing:
             MusicClient.is_playing = False
             MusicClient.is_paused = True
             MusicClient.vc.pause()
-            await self.bot.embed(interaction, "Pause on")
+            await self.bot.embed(interaction, "Wstrzymano utwor")
         elif MusicClient.is_paused:
             MusicClient.is_paused = False
             MusicClient.is_playing = True
             MusicClient.vc.resume()
-            await self.bot.embed(interaction, "Pause off")
+            await self.bot.embed(interaction, "Wznowiono utwor")
 
-    @app_commands.command(name="skip", description="Skips the current song being played")
+    @app_commands.command(name="pomin", description="Pomin utwor")
     @app_commands.guild_only()
     async def skip(self, interaction: discord.Interaction):
         if MusicClient.vc is not None and MusicClient.vc.is_connected() and len(MusicClient.music_queue) > 0:
             MusicClient.vc.pause()
             self.play_music()
-            await self.bot.embed(interaction, title="Song skipped", description=f"Nowplaying: {Song.nowplaying}")
+            await self.bot.embed(interaction, title="Pominiento utwor", description=f"Co jest grane?: {Song.nowplaying}")
         else:
-            await self.bot.embed(interaction, "No music in queue")
+            await self.bot.embed(interaction, "Nie ma zadnych utworow w kolejce")
 
-    @app_commands.command(name="queue", description="Displays the queue")
+    @app_commands.command(name="kolejka", description="wyswietl kolejke utworow")
     @app_commands.guild_only()
     async def queue(self, interaction: discord.Interaction):
         retval = ""
@@ -143,48 +143,48 @@ class Music(commands.Cog):
             retval += MusicClient.music_queue[i][0]['title'] + "\n"
 
         if retval != "":
-            await self.bot.embed(interaction, retval, title="Queue:")
+            await self.bot.embed(interaction, retval, title="Kolejka:")
         else:
-            await self.bot.embed(interaction, "No music in queue")
+            await self.bot.embed(interaction, "Nie ma zadnych utworow w kolejce")
 
-    @app_commands.command(name="queue_clear", description="Stops the music and clears the queue")
+    @app_commands.command(name="wyczysc_kolejke", description="Usuwa wszystkie utwory z kolejki")
     @app_commands.guild_only()
     async def queue_clear(self, interaction: discord.Interaction):
         if MusicClient.vc is not None and MusicClient.is_playing:
             MusicClient.vc.stop()
         MusicClient.music_queue = []
-        await self.bot.embed(interaction, "Music queue cleared")
+        await self.bot.embed(interaction, "Wyczyszczono kolejke")
 
-    @app_commands.command(name="leave", description="Kick the bot from voice chat")
+    @app_commands.command(name="wyjdz", description="Wyrzuc bota z kanalu glosowego")
     @app_commands.guild_only()
     async def leave(self, interaction: discord.Interaction):
         MusicClient.is_playing = False
         MusicClient.is_paused = False
         MusicClient.music_queue = []
         await MusicClient.vc.disconnect()
-        await self.bot.embed(interaction, "Bot left the voice chat")
+        await self.bot.embed(interaction, "Bot opuscil czat glosowy")
 
-    @app_commands.command(name="nowplaying", description="Prints the current song name")
+    @app_commands.command(name="cojestgrane", description="Wyswietl teraz odtwarzany utwor")
     @app_commands.guild_only()
     async def nowplaying(self, interaction: discord.Interaction):
         if interaction.user.voice is None or MusicClient.is_playing is False:
-            await self.bot.embed(interaction, "No song is playing")
+            await self.bot.embed(interaction, "Nie ma zadnego odtwarzanego utworu")
 
-        await self.bot.embed(interaction, Song.nowplaying, title="Now Playing:")
+        await self.bot.embed(interaction, Song.nowplaying, title="Co jest grane?:")
 
-    @app_commands.command(name="loop", description="Loops the song")
+    @app_commands.command(name="petla", description="wlacz lub wylacz ciagle odtwarzanie utworu")
     @app_commands.guild_only()
     async def loop(self, interaction: discord.Interaction):
         user_voice = interaction.user.voice
         if user_voice is None:
             # ! you need to be connected so that the bot knows where to go
-            await self.bot.embed(interaction, "Connect to the voice channel", ephemeral=True)
+            await self.bot.embed(interaction, "Dolacz do kanalu glosowego", ephemeral=True)
         else:
             MusicClient.is_looped ^= True
             if MusicClient.is_looped is False:
-                await self.bot.embed(interaction, "Loop is now off")
+                await self.bot.embed(interaction, "Petla jest teraz wylaczona")
             else:
-                await self.bot.embed(interaction, "Loop is now on")
+                await self.bot.embed(interaction, "Petla jest teraz wlaczona")
 
 
 async def setup(bot):
