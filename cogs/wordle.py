@@ -146,7 +146,7 @@ class Wordle(commands.Cog):
             else:
                 await self.remove_try(interaction)
                 colored_word = self.generate_colored_word(guess, self.answer)
-                await self.bot.embed(interaction, f"{colored_word} {guess}", title="Your guess:", footer=f"tries left: {self.tries_left}", followup=True)
+                await self.bot.embed(interaction, f"{colored_word} `{guess}`", title="Your guess:", footer=f"tries left: {self.tries_left}", followup=True)
 
     @ app_commands.command(name="wordle_stats", description="View your wordle stats")
     async def wordle_stats(self, interaction: discord.Interaction):
