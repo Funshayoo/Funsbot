@@ -22,7 +22,7 @@ class Fun(commands.Cog):
     async def flip(self, interaction: discord.Interaction):
         await self.bot.embed(interaction, random.choice(self.flip_array))
 
-    @app_commands.command(name="zarcik", description="żarcik kosmonaucik")
+    @app_commands.command(name="zarcik", description="żarcik kosmonaucik (niestety tylko po ang, ale z czasem zmienie jezyk na polski)")
     async def joke(self, interaction: discord.Interaction):
         j = await Jokes()
         joke = await j.get_joke(response_format="txt", lang="en", category=['dark'])
