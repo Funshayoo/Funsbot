@@ -47,7 +47,7 @@ async def load_extensions():
 @bot.event
 async def on_ready():
     # change bot activity
-    await bot.change_presence(activity=discord.Game(name='/help'))
+    await bot.change_presence(activity=discord.Game(name='przezycie z pania z edb'))
     print(f"""
           _   _       _                       
  | \ | |     (_)                      
