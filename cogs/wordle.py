@@ -15,8 +15,8 @@ class Wordle(commands.Cog):
         self.answer = ""
         self.tries_left = 0
 
-        self.letter_colors = {"green": "<:GreenSquare:1058105080630493244>",
-                              "yellow": "<:YellowSquare:1058105081637122069>", "grey": "<:ColorAbsent:1058105077073711144>"}
+        self.letter_colors = {"green": "<:green:1149418205027238038>",
+                              "yellow": "<:yellow:1149418215831777390>", "grey": "<:grey:1149418192297537596>"}
 
         self.all_words = set(word.strip()
                              for word in open("./wordle_src/dictionary.txt"))
