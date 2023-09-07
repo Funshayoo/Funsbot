@@ -1,13 +1,11 @@
 ## Funsbot
 
-Funsbot is a fun Discord bot with a wide range of features for your server. Whether you're looking for moderation tools, music functionality, or just want to have some fun, Funsbot has you covered.
+Najman bot is a fun Discord bot with a wide range of features for your server. Whether you're looking for moderation tools, music functionality, or just want to have some fun, Funsbot has you covered.
 
 ## Features
 - Playing music from youtube
 - Wordle game
-- Moderation tools
 - Fun commands
-- ChatGPT integration
 
 ## Requirements
 > Python 3.10 or newer, install all the requirements

@@ -49,13 +49,14 @@ async def on_ready():
     # change bot activity
     await bot.change_presence(activity=discord.Game(name='/help'))
     print(f"""
-     ______               _           _   
-    |  ____|             | |         | |  
-    | |__ _   _ _ __  ___| |__   ___ | |_ 
-    |  __| | | | '_ \/ __| '_ \ / _ \| __|
-    | |  | |_| | | | \__ \ |_) | (_) | |_ 
-    |_|   \__,_|_| |_|___/_.__/ \___/ \__|
-
+          _   _       _                       
+ | \ | |     (_)                      
+ |  \| | __ _ _ _ __ ___   __ _ _ __  
+ | . ` |/ _` | | '_ ` _ \ / _` | '_ \ 
+ | |\  | (_| | | | | | | | (_| | | | |
+ |_| \_|\__,_| |_| |_| |_|\__,_|_| |_|
+            _/ |                      
+           |__/                       
         made by Funshayo
         Logged in as: {bot.user}
         Discord version: {discord.__version__}
@@ -66,19 +67,7 @@ async def on_ready():
     except Exception as e:
         print(e)
 
-
-@bot.event
-async def on_member_join(member):
-    channel = bot.get_channel(1007632094899490886)
-    embed = discord.Embed(
-        title='Siemanoo!!!', description=f'{member.mention} <:pepewow:1007638216033194064>', color=color)
-    # ? send welcome message + add user a role
-    await channel.send(embed=embed)
-    role = discord.utils.get(member.guild.roles, name='Paczka')
-    await member.add_roles(role)
-
-
-# ! start the bot
+# start the bot
 
 
 async def main():
