@@ -109,7 +109,7 @@ class Wordle(commands.Cog):
                 await wordle_cursor.execute(sql, val)
 
             await wordle_db.commit()
-        await self.bot.embed(interaction, f"The answer was: {self.answer}", "Game over:", followup=True)
+        await self.bot.embed(interaction, f"The answer was: `{self.answer}`", "Game over:", followup=True)
 
     @ commands.Cog.listener()
     async def on_ready(self):
@@ -127,9 +127,17 @@ class Wordle(commands.Cog):
                 await wordle_cursor.execute(f"SELECT game_started, answer, tries_left FROM wordle WHERE user_id = {user.id}")
 
                 user_data = await wordle_cursor.fetchone()
-                self.is_playing = user_data[0]
-                self.answer = user_data[1]
-                self.tries_left = user_data[2]
+                if user_data is None:
+                    sql = (
+                        "INSERT INTO wordle (user_id, answer, tries_left, game_started, games_played, wins, losses) VALUES (?, ?, ?, ?, ?, ?, ?)")
+                    val = (user.id, "", 5, False, 0, 0, 0)
+                    await wordle_cursor.execute(sql, val)
+                    self.is_playing = False
+                    self.tries_left = 5
+                else:
+                    self.is_playing = user_data[0]
+                    self.answer = user_data[1]
+                    self.tries_left = user_data[2]
 
             await wordle_db.commit()
 
