@@ -12,7 +12,10 @@ class Database:
     async def db_execute(self, sql, val=None):
         db = await self.db_connect()
         cursor = await db.cursor()
-        await cursor.execute(sql)
+        if val is None:
+            await cursor.execute(sql)
+        else:
+            await cursor.execute(sql, val)
         await db.commit()
         await db.close()
 
