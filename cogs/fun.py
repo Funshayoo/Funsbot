@@ -26,7 +26,7 @@ class Fun(commands.Cog):
     async def joke(self, interaction: discord.Interaction):
         j = await Jokes()
         joke = await j.get_joke(response_format="txt", lang="en", category=['dark'])
-        await self.bot.embed(interaction, joke, title="Joke:")
+        await self.bot.embed(interaction, joke)
 
 
 async def setup(bot):

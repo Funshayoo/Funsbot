@@ -18,9 +18,9 @@ class Cmds(commands.Cog):
         await self.bot.embed(interaction, "/**komenda**", ephemeral=True)
 
     @app_commands.command(name="odkurzacz", description="wyczysc czat")
+    @app_commands.describe(amount="ilosc wiadomosci do usuniecia")
     @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
-    @app_commands.describe(amount="ilosc wiadomosci")
     async def clear(self, interaction: discord.Interaction, amount: int):
         await interaction.response.defer(thinking=True)
         await interaction.channel.purge(limit=amount)
