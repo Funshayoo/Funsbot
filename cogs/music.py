@@ -114,9 +114,9 @@ class Music(commands.Cog):
 
                 await self.bot.embed(interaction, title="Added song to the queue:", description=song['title'], followup=True)
 
-    @app_commands.command(name="pause_on_off", description="Pauses the current song being played")
+    @app_commands.command(name="pause_resume", description="Pauses the current song being played")
     @app_commands.guild_only()
-    async def pause_on_off(self, interaction: discord.Interaction):
+    async def pause_resume(self, interaction: discord.Interaction):
         if MusicClient.is_playing:
             MusicClient.is_playing = False
             MusicClient.is_paused = True

@@ -19,11 +19,11 @@ class Fun(commands.Cog):
 
     # ? flip command
     @app_commands.command(name="moneta", description="rzut monetą")
-    async def flip(self, interaction: discord.Interaction):
+    async def moneta(self, interaction: discord.Interaction):
         await self.bot.embed(interaction, random.choice(self.flip_array))
 
-    @app_commands.command(name="zarcik", description="żarcik kosmonaucik (niestety tylko po ang, ale z czasem zmienie jezyk na polski)")
-    async def joke(self, interaction: discord.Interaction):
+    @app_commands.command(name="zarcik", description="zarcik kosmonaucik (niestety tylko po ang, ale z czasem zmienie jezyk na polski)")
+    async def zarcik(self, interaction: discord.Interaction):
         j = await Jokes()
         joke = await j.get_joke(response_format="txt", lang="en", category=['dark'])
         await self.bot.embed(interaction, joke)
