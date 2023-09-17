@@ -39,7 +39,7 @@ class Wordle(commands.Cog):
         games_played = user_data[3]
 
         sql = ("UPDATE wordle SET answer = ?, tries_left = ?, game_started = ?, games_played = ? WHERE user_id = ?")
-        val = (self.answer, 5, True, games_played + 1, user.id)
+        val = (self.answer, 4, True, games_played + 1, user.id)
         await Database().db_execute(sql, val)
 
     def guess_valid(self, word: str) -> bool:
@@ -126,10 +126,10 @@ class Wordle(commands.Cog):
         user_data = await cursor.fetchone()
         if user_data is None:
             sql = ("INSERT INTO wordle (user_id, answer, tries_left, game_started, games_played, wins, losses) VALUES (?, ?, ?, ?, ?, ?, ?)")
-            val = (user.id, "", 5, False, 0, 0, 0)
+            val = (user.id, "", 4, False, 0, 0, 0)
             await Database().db_execute(sql, val)
             is_playing = False
-            tries_left = 5
+            tries_left = 4
         else:
             is_playing = user_data[0]
             self.answer = user_data[1]
