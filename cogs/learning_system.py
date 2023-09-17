@@ -33,7 +33,11 @@ class Learning_system(commands.Cog):
                 pass
             else:
 
-                homework_data = self.GetHomeworkData(homework)
+                try:
+                    homework_data = self.GetHomeworkData(homework)
+                except Exception as e:
+                    print(e)
+                    continue
 
                 tomorrow = datetime.date.today() + datetime.timedelta(days=1)
                 if homework_data['date'] == str(tomorrow):
@@ -72,11 +76,12 @@ class Learning_system(commands.Cog):
 
     @ app_commands.command(name="zadania", description="Zobacz zapowiedziane zadania na jutro")
     async def zadania(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         homework = self.getHomework()
         if homework is None:
-            await self.bot.embed(interaction, "", title="Nie ma nic na jutro <:najman:1150035175300923502>")
+            await self.bot.embed(interaction, "", title="Nie ma nic na jutro <:najman:1150035175300923502>", followup=True)
         else:
-            await self.bot.embed(interaction, homework, title="Zadania na jutro:")
+            await self.bot.embed(interaction, homework, title="Zadania na jutro:", followup=True)
 
 
 async def setup(bot):
