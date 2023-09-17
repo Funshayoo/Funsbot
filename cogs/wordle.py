@@ -3,20 +3,19 @@ from discord.ext import commands
 from discord import app_commands
 
 import random
-import aiosqlite
-from config import Config
+from cogs.utils.database import Database
 
 
 class Wordle(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        self.is_playing = False
+        # self.is_playing = False
         self.answer = ""
-        self.tries_left = 0
+        # self.tries_left = 0
 
-        self.letter_colors = {"green": "<:GreenSquare:1058105080630493244>",
-                              "yellow": "<:YellowSquare:1058105081637122069>", "grey": "<:ColorAbsent:1058105077073711144>"}
+        self.letter_colors = {"green": "<:green:1149418205027238038>",
+                              "yellow": "<:yellow:1149418215831777390>", "grey": "<:grey:1149418192297537596>"}
 
         self.all_words = set(word.strip()
                              for word in open("./wordle_src/dictionary.txt"))
@@ -28,18 +27,18 @@ class Wordle(commands.Cog):
         user = interaction.user
         self.answer = self.get_random_word()
         print(self.answer)
+        db = await Database().db_connect()
+        cursor = await db.cursor()
+        sql = (
+            "SELECT answer, tries_left, game_started, games_played FROM wordle WHERE user_id = ?")
+        val = (user.id,)
+        await cursor.execute(sql, val)
+        user_data = await cursor.fetchone()
+        games_played = user_data[3]
 
-        async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
-            async with wordle_db.cursor() as wordle_cursor:
-                await wordle_cursor.execute(f"SELECT answer, tries_left, game_started, games_played FROM wordle WHERE user_id = {user.id}")
-                user_data = await wordle_cursor.fetchone()
-                games_played = user_data[3]
-
-                sql = (
-                    "UPDATE wordle SET answer = ?, tries_left = ?, game_started = ?, games_played = ? WHERE user_id = ?")
-                val = (self.answer, 5, True, games_played + 1, user.id)
-                await wordle_cursor.execute(sql, val)
-            await wordle_db.commit()
+        sql = ("UPDATE wordle SET answer = ?, tries_left = ?, game_started = ?, games_played = ? WHERE user_id = ?")
+        val = (self.answer, 4, True, games_played + 1, user.id)
+        await Database().db_execute(sql, val)
 
     def guess_valid(self, word: str) -> bool:
         return word.lower() in self.all_words
@@ -65,51 +64,47 @@ class Wordle(commands.Cog):
 
     async def user_won(self, interaction: discord.Interaction) -> bool:
         user = interaction.user
-        async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
-            async with wordle_db.cursor() as wordle_cursor:
-                await wordle_cursor.execute(f"SELECT wins FROM wordle WHERE user_id = {user.id}")
+        db = await Database().db_connect()
+        cursor = await db.cursor()
+        await cursor.execute(f"SELECT wins FROM wordle WHERE user_id = {user.id}")
+        user_data = await cursor.fetchone()
+        wins = user_data[0]
+        sql = (
+            "UPDATE wordle SET wins = ?, game_started = ?, answer = ?, tries_left = ? WHERE user_id = ?")
+        val = (wins + 1, False, "", 4, user.id)
+        await Database().db_execute(sql, val)
 
-                user_data = await wordle_cursor.fetchone()
-                wins = user_data[0]
-                sql = (
-                    "UPDATE wordle SET wins = ?, game_started = ?, answer = ?, tries_left = ? WHERE user_id = ?")
-                val = (wins + 1, False, "", 5, user.id)
-                await wordle_cursor.execute(sql, val)
-
-            await wordle_db.commit()
         await self.bot.embed(interaction, f"The answer was: **{self.answer}**", title=f"{interaction.user} guessed the word!", followup=True)
 
     async def remove_try(self, interaction):
         user = interaction.user
-        async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
-            async with wordle_db.cursor() as wordle_cursor:
-                await wordle_cursor.execute(f"SELECT tries_left FROM wordle WHERE user_id = {user.id}")
-
-                user_data = await wordle_cursor.fetchone()
-                tries_left = user_data[0]
-                self.tries_left = tries_left - 1
-                sql = (
-                    "UPDATE wordle SET tries_left = ? WHERE user_id = ?")
-                val = (self.tries_left, user.id)
-                await wordle_cursor.execute(sql, val)
-
-            await wordle_db.commit()
+        db = await Database().db_connect()
+        cursor = await db.cursor()
+        sql = ("SELECT tries_left FROM wordle WHERE user_id = ?")
+        val = (user.id,)
+        await cursor.execute(sql, val)
+        user_data = await cursor.fetchone()
+        tries_left = user_data[0]
+        tries_left = tries_left - 1
+        sql = ("UPDATE wordle SET tries_left = ? WHERE user_id = ?")
+        val = (tries_left, user.id)
+        await Database().db_execute(sql, val)
 
     async def game_over(self, interaction):
         user = interaction.user
-        async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
-            async with wordle_db.cursor() as wordle_cursor:
-                await wordle_cursor.execute(f"SELECT losses FROM wordle WHERE user_id = {user.id}")
+        db = await Database().db_connect()
+        cursor = await db.cursor()
+        sql = ("SELECT losses FROM wordle WHERE user_id = ?")
+        val = (user.id,)
+        await cursor.execute(sql, val)
 
-                user_data = await wordle_cursor.fetchone()
-                losses = user_data[0]
-                sql = (
-                    "UPDATE wordle SET losses = ?, game_started = ?, answer = ?, tries_left = ? WHERE user_id = ?")
-                val = (losses + 1, False, "", 5, user.id)
-                await wordle_cursor.execute(sql, val)
+        user_data = await cursor.fetchone()
+        losses = user_data[0]
+        sql = ("UPDATE wordle SET losses = ?, game_started = ?, answer = ?, tries_left = ? WHERE user_id = ?")
+        val = (losses + 1, False, "", 4, user.id)
+        await Database().db_execute(sql, val)
 
-            await wordle_db.commit()
-        await self.bot.embed(interaction, f"The answer was: {self.answer}", "Game over:", followup=True)
+        await self.bot.embed(interaction, f"The answer was: `{self.answer}`", "Game over:", followup=True)
 
     @ commands.Cog.listener()
     async def on_ready(self):
@@ -122,18 +117,23 @@ class Wordle(commands.Cog):
 
         await interaction.response.defer()
 
-        async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
-            async with wordle_db.cursor() as wordle_cursor:
-                await wordle_cursor.execute(f"SELECT game_started, answer, tries_left FROM wordle WHERE user_id = {user.id}")
+        db = await Database().db_connect()
+        cursor = await db.cursor()
+        await cursor.execute(f"SELECT game_started, answer, tries_left FROM wordle WHERE user_id = {user.id}")
 
-                user_data = await wordle_cursor.fetchone()
-                self.is_playing = user_data[0]
-                self.answer = user_data[1]
-                self.tries_left = user_data[2]
+        user_data = await cursor.fetchone()
+        if user_data is None:
+            sql = ("INSERT INTO wordle (user_id, answer, tries_left, game_started, games_played, wins, losses) VALUES (?, ?, ?, ?, ?, ?, ?)")
+            val = (user.id, "", 4, False, 0, 0, 0)
+            await Database().db_execute(sql, val)
+            is_playing = False
+            tries_left = 4
+        else:
+            is_playing = user_data[0]
+            self.answer = user_data[1]
+            tries_left = user_data[2]
 
-            await wordle_db.commit()
-
-        if not self.is_playing:
+        if not is_playing:
             await self.make_new_game(interaction)
 
         if not self.guess_valid(guess):
@@ -141,34 +141,34 @@ class Wordle(commands.Cog):
         else:
             if guess == self.answer:
                 await self.user_won(interaction)
-            elif self.tries_left <= 1:
+            elif tries_left <= 0:
                 await self.game_over(interaction)
             else:
                 await self.remove_try(interaction)
                 colored_word = self.generate_colored_word(guess, self.answer)
-                await self.bot.embed(interaction, f"{colored_word} {guess}", title="Your guess:", footer=f"tries left: {self.tries_left}", followup=True)
+                await self.bot.embed(interaction, f"{colored_word} `{guess}`", title="Your guess:", footer=f"tries left: {tries_left}", followup=True)
 
     @ app_commands.command(name="wordle_stats", description="View your wordle stats")
     async def wordle_stats(self, interaction: discord.Interaction):
         user = interaction.user
 
-        async with aiosqlite.connect(Config.DATABASE_DIRECTORY) as wordle_db:
-            async with wordle_db.cursor() as wordle_cursor:
-                await wordle_cursor.execute(f"SELECT games_played, wins, losses FROM wordle WHERE user_id = {user.id}")
-                stats = await wordle_cursor.fetchone()
-                try:
-                    games_played = stats[0]
-                    wins = stats[1]
-                    losses = stats[2]
-                except Exception:
-                    games_played = 0
-                    wins = 0
-                    losses = 0
-
-            await wordle_db.commit()
+        db = await Database().db_connect()
+        cursor = await db.cursor()
+        sql = ("SELECT games_played, wins, losses FROM wordle WHERE user_id = ?")
+        val = (user.id,)
+        await cursor.execute(sql, val)
+        stats = await cursor.fetchone()
+        try:
+            games_played = stats[0]
+            wins = stats[1]
+            losses = stats[2]
+        except Exception:
+            games_played = 0
+            wins = 0
+            losses = 0
 
         if games_played == 0:
-            await self.bot.embed(interaction, 'You need to play some games_played first', ephemeral=True)
+            await self.bot.embed(interaction, 'You need to play a game first', ephemeral=True)
         else:
             if wins == 0:
                 win_ratio = 0

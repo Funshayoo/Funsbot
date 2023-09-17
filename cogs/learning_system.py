@@ -5,38 +5,42 @@ from discord import app_commands
 from config import Config
 
 import requests
-import json
 import datetime
-
-from py_librus_api import Librus
 
 
 class Learning_system(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
         self.token = Config.NOTION_TOKEN
-        self.database_id = Config.NOTION_DATABASE
 
     def getHomework(self):
-        url = f'https://api.notion.com/v1/databases/{self.database_id}/query'
+        headers = {'Authorization': f"Bearer {self.token}",
+                   'Content-Type': 'application/json',
+                   'Notion-Version': '2022-06-28'}
+        search_params = {"filter": {"value": "page", "property": "object"}}
 
-        r = requests.post(url, headers={
-            "Authorization": f"Bearer {self.token}",
-            "Notion-Version": "2021-08-16"
-        })
-
-        request_list = r.json()
-        request_list = request_list['results']
+        request_list = requests.post(
+            'https://api.notion.com/v1/search',
+            json=search_params, headers=headers).json()['results']
 
         homework_list = ""
 
         for homework in request_list:
-            homework_data = self.GetHomeworkData(homework)
+            if homework['parent']['type'] == "workspace":
+                pass
+            else:
 
-            tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-            if homework_data['date'] == str(tomorrow):
-                homework_list += "- " + homework_data['name'] + " " + f"**{homework_data['type']}**"
+                try:
+                    homework_data = self.GetHomeworkData(homework)
+                except Exception as e:
+                    print(e)
+                    continue
+
+                tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+                if homework_data['date'] == str(tomorrow):
+                    homework_list += "- " + \
+                        homework_data['name'] + ' ' + \
+                        f"**{homework_data['type']}**" + '\n'
 
         if len(homework_list) > 0:
             return homework_list
@@ -46,10 +50,15 @@ class Learning_system(commands.Cog):
     def GetHomeworkData(self, result):
         # you can print result here and check the format of the answer.
         homework_id = result['id']
+        print(homework_id)
         properties = result['properties']
+        print(properties)
         date = properties['Date']['date']['start']
+        print(date)
         name = properties['Name']['title'][0]['text']['content']
+        print(name)
         type = properties['Type']['select']['name']
+        print(type)
 
         return {
             'id': homework_id,
@@ -58,23 +67,18 @@ class Learning_system(commands.Cog):
             'type': type,
         }
 
-    @commands.Cog.listener()
+    @ commands.Cog.listener()
     async def on_ready(self):
         print('Loaded learning_system.py!')
 
-    @app_commands.command(name="zadania", description="See what is for tomorrow homework")
-    @app_commands.checks.has_role("8c")
+    @ app_commands.command(name="zadania", description="Zobacz zapowiedziane zadania na jutro")
     async def zadania(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         homework = self.getHomework()
         if homework is None:
-            await self.bot.embed(interaction, "", title="There is no homework for tomorrow <:pog:1007719591276990655>")
+            await self.bot.embed(interaction, "", title="Nie ma nic na jutro <:najman:1150035175300923502>", followup=True)
         else:
-            await self.bot.embed(interaction, homework, title="Homework for tomorrow:")
-
-    # @app_commands.command(name="numerek", description="Get the lucky number")
-    # @app_commands.checks.has_role("8c")
-    # async def numerek(self, interaction: discord.Interaction):
-    #    await self.bot.embed(interaction, get_lucky_number(), title="Szczęśliwy numerek na dziś to:")
+            await self.bot.embed(interaction, homework, title="Zadania na jutro:", followup=True)
 
 
 async def setup(bot):

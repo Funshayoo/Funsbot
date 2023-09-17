@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from config import Config
 
 
 class Cmds(commands.Cog):
@@ -14,80 +13,38 @@ class Cmds(commands.Cog):
         print('Loaded cmds.py!')
 
     # ? help command
-    @app_commands.command(name="help", description="use this command to get some help")
-    async def help(self, interaction: discord.Interaction):
-        await self.bot.embed(interaction, "You can use commands by typing /**command**", ephemeral=True)
+    @app_commands.command(name="pomoc", description="potrzebna pomoc")
+    async def pomoc(self, interaction: discord.Interaction):
+        await self.bot.embed(interaction, '''
 
-    # ? kick command
-    @app_commands.command(name="kick", description="Kick the user")
+        `/pomoc` - ta komenda
+        `/odkurzacz` - (komenda tylko dla adminow) wyczysc czat
+        `/moneta` - rzut moneta
+        `/zarcik` - zarcik kosmonaucik
+        `/zadania` - zobacz zapowiedziane zadania na jutro
+        `/play` - pusc muzyke
+        `/pause_resume` - zatrzymaj/wznow muzyke
+        `/skip` - pomin utwor
+        `/queue` - wyswietl kolejke
+        `/queue_clear` - wyczysc kolejke
+        `/leave` - wywal bota z vc
+        `/nowplaying` - wyswietl tytyl teraz odtwarzanego utworu
+        `/loop` - zapetl utwor
+        `/wordle` - zagraj w wordle
+        `/wordle_stats` - wyswietl twoje statystyki w wordle
+
+        ''', title="/**nazwa_komendy**", ephemeral=True)
+
+    @app_commands.command(name="odkurzacz", description="wyczysc czat")
+    @app_commands.describe(amount="ilosc wiadomosci do usuniecia")
     @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
-    @app_commands.describe(reason="For what reason")
-    async def kick(self, interaction: discord.Interaction, member: discord.Member, reason: str = None):
-        await self.bot.embed(interaction, f'Kicked {member.mention} for reason {reason}')
-        await member.kick(reason=reason)
-
-    # ? ban command
-    @app_commands.command(name="ban", description="Ban the user")
-    @app_commands.guild_only()
-    @app_commands.default_permissions(administrator=True)
-    @app_commands.describe(reason="For what reason")
-    async def ban(self, interaction: discord.Interaction, member: discord.Member, reason: str = None):
-        await self.bot.embed(interaction, f'Banned {member.mention} for reason {reason}')
-        await member.ban(reason=reason)
-
-    # ? mute command
-    @app_commands.command(name="mute", description="Mute the user")
-    @app_commands.guild_only()
-    @app_commands.default_permissions(administrator=True)
-    @app_commands.describe(reason="For what reason")
-    async def mute(self, interaction: discord.Interaction, member: discord.Member, reason: str = None):
-        guild = interaction.guild
-        mutedRole = discord.utils.get(guild.roles, name='Muted')
-        await self.bot.embed(interaction, f'Muted {member.mention} for reason {reason}')
-
-        if not mutedRole:
-            mutedRole = await guild.create_role(name='Muted')
-
-        await member.add_roles(mutedRole, reason=reason)
-
-    # ? unmute command
-    @app_commands.command(name="unmute", description="Unmute the user")
-    @app_commands.guild_only()
-    @app_commands.default_permissions(administrator=True)
-    async def unmute(self, interaction: discord.Interaction, member: discord.Member):
-        guild = interaction.guild
-        mutedRole = discord.utils.get(guild.roles, name='Muted')
-        await self.bot.embed(interaction, f'Unmuted {member.mention}')
-        await member.remove_roles(mutedRole)
-
-    @app_commands.command(name="clear", description="Clear the chat")
-    @app_commands.guild_only()
-    @app_commands.default_permissions(administrator=True)
-    @app_commands.describe(amount="How much messages")
-    async def clear(self, interaction: discord.Interaction, amount: int):
+    async def odkurzacz(self, interaction: discord.Interaction, amount: int):
         await interaction.response.defer(thinking=True)
-        await interaction.channel.purge(limit=amount)
+        await interaction.channel.purge(limit=amount + 1)
         embed = discord.Embed(
-            title="", description=f'Cleared {amount} message(s)', color=self.self.bot.embed_color)
+            title="", description=f'Usunieto {amount} wiadomosci)', color=self.self.bot.embed_color)
         await interaction.channel.send(embed=embed)
-
-    # ? announcements command
-    @app_commands.command(name="announce", description="Send a message to announcements channel")
-    @app_commands.guild_only()
-    @app_commands.default_permissions(administrator=True)
-    @app_commands.describe(title="What title", message="What to say")
-    async def announce(self, interaction: discord.Interaction, title: str, message: str):
-        channel = self.bot.get_channel(Config.DISCORD_ANNOUNCEMENT_CHANNEL)
-        guild = interaction.guild
-
-        if message is None:
-            return
-        else:
-            embed = discord.Embed(
-                title=title, description=message, color=self.bot.embed_color)
-            await channel.send(embed=embed)
-            await channel.send(guild.default_role)
 
 
 async def setup(bot):
