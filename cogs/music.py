@@ -3,14 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 
 from yt_dlp import YoutubeDL
-
-from asyncio import run_coroutine_threadsafe, sleep
-
-import base64
-from requests import post
-import json
-
-from config import Config
+from asyncio import run_coroutine_threadsafe
 
 
 class Options:

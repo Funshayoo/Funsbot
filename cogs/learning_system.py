@@ -11,10 +11,7 @@ import datetime
 class Learning_system(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
         self.token = Config.NOTION_TOKEN
-        self.database_id = Config.NOTION_DATABASE
-        self.created_id = "cb49825d-92a7-466b-80e4-621f94e7f04d"
 
     def getHomework(self):
         headers = {'Authorization': f"Bearer {self.token}",

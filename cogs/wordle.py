@@ -3,8 +3,6 @@ from discord.ext import commands
 from discord import app_commands
 
 import random
-import aiosqlite
-from config import Config
 from cogs.utils.database import Database
 
 
@@ -73,7 +71,7 @@ class Wordle(commands.Cog):
         wins = user_data[0]
         sql = (
             "UPDATE wordle SET wins = ?, game_started = ?, answer = ?, tries_left = ? WHERE user_id = ?")
-        val = (wins + 1, False, "", 5, user.id)
+        val = (wins + 1, False, "", 4, user.id)
         await Database().db_execute(sql, val)
 
         await self.bot.embed(interaction, f"The answer was: **{self.answer}**", title=f"{interaction.user} guessed the word!", followup=True)
@@ -103,7 +101,7 @@ class Wordle(commands.Cog):
         user_data = await cursor.fetchone()
         losses = user_data[0]
         sql = ("UPDATE wordle SET losses = ?, game_started = ?, answer = ?, tries_left = ? WHERE user_id = ?")
-        val = (losses + 1, False, "", 5, user.id)
+        val = (losses + 1, False, "", 4, user.id)
         await Database().db_execute(sql, val)
 
         await self.bot.embed(interaction, f"The answer was: `{self.answer}`", "Game over:", followup=True)
