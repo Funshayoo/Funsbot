@@ -83,15 +83,21 @@ class GroupView(discord.ui.View):
     @discord.ui.select(
         placeholder="W ktorych grupach jestes",
         options=[
-            discord.SelectOption(label="grupa 1 angielski", value="1ang"),
-            discord.SelectOption(label="grupa 2 angielski", value="2ang"),
+            discord.SelectOption(label="grupa 1 angielski",
+                                 value="1ang", emoji="🇬🇧"),
+            discord.SelectOption(label="grupa 2 angielski",
+                                 value="2ang", emoji="🇬🇧"),
 
-            discord.SelectOption(label="grupa 1 niemiecki", value="1nie"),
-            discord.SelectOption(label="grupa 2 niemiecki", value="2nie"),
+            discord.SelectOption(label="grupa 1 niemiecki",
+                                 value="1nie", emoji="🇩🇪"),
+            discord.SelectOption(label="grupa 2 niemiecki",
+                                 value="2nie", emoji="🇩🇪"),
 
-            discord.SelectOption(label="grupa 1 utk", value="1utk"),
+            discord.SelectOption(
+                label="grupa 1 utk", value="1utk", emoji="<:plachta:1153392430054387742>"),
             discord.SelectOption(label="grupa 2 utk", value="2utk"),
-            discord.SelectOption(label="grupa 3 utk", value="3utk"),
+            discord.SelectOption(
+                label="grupa 3 utk", value="3utk", emoji="<:pudelko:1153393507004854372>"),
 
         ],
         max_values=3
