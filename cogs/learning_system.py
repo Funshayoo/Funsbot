@@ -90,8 +90,8 @@ class GroupView(discord.ui.View):
             discord.SelectOption(label="grupa 2 niemiecki", value="2nie"),
 
             discord.SelectOption(label="grupa 1 utk", value="1utk"),
-            discord.SelectOption(label="grupa 1 utk", value="2utk"),
-            discord.SelectOption(label="grupa 1 utk", value="3utk"),
+            discord.SelectOption(label="grupa 2 utk", value="2utk"),
+            discord.SelectOption(label="grupa 3 utk", value="3utk"),
 
         ],
         max_values=3
