@@ -13,6 +13,16 @@ class Learning_system(commands.Cog):
         self.bot = bot
         self.token = Config.NOTION_TOKEN
 
+    def format_homework(self, id, name, type):
+        link_name = str(name).replace('.', '-').replace(' ', '-')
+        link_id = str(id).replace('-', '')
+
+        link = f"https://funshayo.notion.site/{link_name}-{link_id}?pvs=4"
+
+        formatted_homework = f"- [{name}]({link})" + ' ' \
+            f"**{type}**" + '\n'
+        return formatted_homework
+
     def getHomework(self):
         headers = {'Authorization': f"Bearer {self.token}",
                    'Content-Type': 'application/json',
@@ -29,7 +39,6 @@ class Learning_system(commands.Cog):
             if homework['parent']['type'] == "workspace":
                 pass
             else:
-
                 try:
                     homework_data = self.GetHomeworkData(homework)
                 except Exception as e:
@@ -38,9 +47,9 @@ class Learning_system(commands.Cog):
 
                 tomorrow = datetime.date.today() + datetime.timedelta(days=1)
                 if homework_data['date'] == str(tomorrow):
-                    homework_list += "- " + \
-                        homework_data['name'] + ' ' + \
-                        f"**{homework_data['type']}**" + '\n'
+                    formatted_homework = self.format_homework(
+                        homework_data['id'], homework_data['name'], homework_data['type'])
+                    homework_list += formatted_homework
 
         if len(homework_list) > 0:
             return homework_list
