@@ -95,7 +95,7 @@ class GroupView(discord.ui.View):
 
             discord.SelectOption(
                 label="grupa 1 utk", value="1utk", emoji="<:plachta:1153392430054387742>"),
-            discord.SelectOption(label="grupa 2 utk", value="2utk"),
+            discord.SelectOption(label="grupa 2 utk", value="2utk", emoji="<:okrajni:1153765701878829147>"),
             discord.SelectOption(
                 label="grupa 3 utk", value="3utk", emoji="<:pudelko:1153393507004854372>"),
 
