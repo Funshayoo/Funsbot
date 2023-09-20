@@ -103,8 +103,6 @@ class GroupView(discord.ui.View):
             discord.SelectOption(
                 label="religia", value="rel", emoji="✝"),
 
-
-
         ],
         max_values=4
     )
