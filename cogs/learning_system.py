@@ -81,7 +81,7 @@ class GroupView(discord.ui.View):
     groups = None
 
     @discord.ui.select(
-        placeholder="W ktorych grupach jestes",
+        placeholder="W ktorych grupach jestes?",
         options=[
             discord.SelectOption(label="grupa 1 angielski",
                                  value="1ang", emoji="🇬🇧"),
@@ -95,12 +95,18 @@ class GroupView(discord.ui.View):
 
             discord.SelectOption(
                 label="grupa 1 utk", value="1utk", emoji="<:plachta:1153392430054387742>"),
-            discord.SelectOption(label="grupa 2 utk", value="2utk", emoji="<:okrajni:1153765701878829147>"),
+            discord.SelectOption(
+                label="grupa 2 utk", value="2utk", emoji="<:okrajni:1153765701878829147>"),
             discord.SelectOption(
                 label="grupa 3 utk", value="3utk", emoji="<:pudelko:1153393507004854372>"),
 
+            discord.SelectOption(
+                label="religia", value="rel", emoji="✝"),
+
+
+
         ],
-        max_values=3
+        max_values=4
     )
     async def select_callback(self, interaction: discord.Interaction, select_item: discord.ui.Select):
         await interaction.response.defer()
