@@ -107,7 +107,7 @@ class GroupView(discord.ui.View):
         max_values=4
     )
     async def select_callback(self, interaction: discord.Interaction, select_item: discord.ui.Select):
-        await interaction.response.defer()
+        # await interaction.response.defer()
         self.groups = select_item.values
         print(self.groups)
         homework = getHomework(self.groups)
@@ -119,7 +119,9 @@ class GroupView(discord.ui.View):
         else:
             embed.description = homework
             embed.title = "Zadania na jutro:"
-        await interaction.channel.send(embed=embed)
+        await interaction.message.edit(embed=embed, view=None)
+        self.disable = True
+        self.stop()
 
 
 class Learning_system(commands.Cog):
@@ -134,6 +136,7 @@ class Learning_system(commands.Cog):
     async def zadania(self, interaction: discord.Interaction):
         view = GroupView()
         await interaction.response.send_message(view=view)
+        await view.wait()
 
 
 async def setup(bot):
