@@ -8,6 +8,21 @@ import requests
 import datetime
 
 
+def get_next_week_day():
+    today = datetime.datetime.today()
+    next_weekday = None
+    if today.weekday() < 4 or today.weekday() == 6:
+        # show next day homework
+        next_weekday = today + datetime.timedelta(days=1)
+    else:
+        # show next monday homework
+        monday = 0
+        days = (monday - today.weekday() + 7) % 7
+        next_weekday = today + datetime.timedelta(days=days)
+
+    return str(next_weekday.date())
+
+
 def format_homework(id, name, type):
     link_name = str(name).replace('.', '-').replace(' ', '-')
     link_id = str(id).replace('-', '')
@@ -42,8 +57,8 @@ def getHomework(groups):
                 print(e)
                 continue
 
-            tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-            if homework_data['date'] == str(tomorrow) and (homework_data['group'] in groups or homework_data['group'] == "wszyscy"):
+            next_weekday = get_next_week_day()
+            if homework_data['date'] == next_weekday and (homework_data['group'] in groups or homework_data['group'] == "wszyscy"):
                 formatted_homework = format_homework(
                     homework_data['id'], homework_data['name'], homework_data['type'])
                 homework_list += formatted_homework
@@ -114,13 +129,12 @@ class GroupView(discord.ui.View):
 
         embed = discord.Embed(color=0x2F3136)
         if homework is None:
-            embed.title = "Nie ma nic na jutro <:najman:1150035175300923502>"
+            embed.title = "Nie ma zadnych zadan <:najman:1150035175300923502>"
             embed.description = ""
         else:
             embed.description = homework
-            embed.title = "Zadania na jutro:"
+            embed.title = "Zadania:"
         await interaction.message.edit(embed=embed, view=None)
-        self.disable = True
         self.stop()
 
 
@@ -132,7 +146,7 @@ class Learning_system(commands.Cog):
     async def on_ready(self):
         print('Loaded learning_system.py!')
 
-    @ app_commands.command(name="zadania", description="Zobacz zapowiedziane zadania na jutro")
+    @ app_commands.command(name="zadania", description="Zobacz zapowiedziane zadania")
     async def zadania(self, interaction: discord.Interaction):
         view = GroupView()
         await interaction.response.send_message(view=view)
