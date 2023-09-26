@@ -19,7 +19,7 @@ class Fun(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
 
-        if (message.author.id == 363301840194109440):
+        if (message.author.id == 833580017383899166):
             await message.add_reaction('💀')
     # ? flip command
 
