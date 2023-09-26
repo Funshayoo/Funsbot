@@ -21,7 +21,7 @@ class Cmds(commands.Cog):
         `/odkurzacz` - (komenda tylko dla adminow) wyczysc czat
         `/moneta` - rzut moneta
         `/zarcik` - zarcik kosmonaucik
-        `/zadania` - zobacz zapowiedziane zadania na jutro
+        `/zadania` - zobacz zapowiedziane zadania
         `/play` - pusc muzyke
         `/pause_resume` - zatrzymaj/wznow muzyke
         `/skip` - pomin utwor

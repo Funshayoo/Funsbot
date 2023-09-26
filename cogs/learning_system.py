@@ -134,7 +134,7 @@ class GroupView(discord.ui.View):
         else:
             embed.description = homework
             embed.title = "Zadania:"
-        await interaction.message.edit(embed=embed, view=None)
+        await interaction.response.send_message(embed=embed, view=None, ephemeral=True)
         self.stop()
 
 
@@ -149,7 +149,7 @@ class Learning_system(commands.Cog):
     @ app_commands.command(name="zadania", description="Zobacz zapowiedziane zadania")
     async def zadania(self, interaction: discord.Interaction):
         view = GroupView()
-        await interaction.response.send_message(view=view)
+        await interaction.response.send_message(view=view, ephemeral=True)
         await view.wait()
 
 
