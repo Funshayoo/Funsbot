@@ -16,7 +16,13 @@ class Fun(commands.Cog):
     async def on_ready(self):
         print('Loaded fun.py!')
 
+    @commands.Cog.listener()
+    async def on_message(self, message):
+
+        if (message.author.id == 363301840194109440):
+            await message.add_reaction('💀')
     # ? flip command
+
     @app_commands.command(name="moneta", description="rzut monetą")
     async def moneta(self, interaction: discord.Interaction):
         await self.bot.embed(interaction, random.choice(self.flip_array))
