@@ -12,6 +12,10 @@ class Fun(commands.Cog):
         self.bot = bot
         self.flip_array = ['orzeł!', 'reszka!']
 
+        # self.blacklisted = set(open("./src/blacklisted_words.txt"))
+        self.blacklisted = open(
+            "src/blacklisted_words.txt").read().splitlines()
+
     @commands.Cog.listener()
     async def on_ready(self):
         print('Loaded fun.py!')
@@ -19,8 +23,13 @@ class Fun(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
 
-        if (message.author.id == 833580017383899166):
-            await message.add_reaction('💀')
+        for word in self.blacklisted:
+            if (word.lower().strip() in str(message.content).lower()):
+                await message.add_reaction('💀')
+                await message.reply("https://tenor.com/view/rotating-skull-gif-24524852")
+            else:
+                pass
+
     # ? flip command
 
     @app_commands.command(name="moneta", description="rzut monetą")
