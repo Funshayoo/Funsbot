@@ -18,10 +18,10 @@ class Wordle(commands.Cog):
                               "yellow": "<:yellow:1149418215831777390>", "grey": "<:grey:1149418192297537596>"}
 
         self.all_words = set(word.strip()
-                             for word in open("./wordle_src/dictionary.txt"))
+                             for word in open("./src/dictionary.txt"))
 
     def get_random_word(self) -> str:
-        return random.choice(open("./wordle_src/wordle_words.txt").read().splitlines())
+        return random.choice(open("./src/wordle_words.txt").read().splitlines())
 
     async def make_new_game(self, interaction: discord.Interaction) -> None:
         user = interaction.user
