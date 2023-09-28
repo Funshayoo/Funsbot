@@ -134,7 +134,7 @@ class GroupView(discord.ui.View):
         else:
             embed.description = homework
             embed.title = "Zadania:"
-        await interaction.message.edit(embed=embed, view=None)
+        await interaction.response.send_message(embed=embed, view=None, ephemeral=True)
         self.stop()
 
 
