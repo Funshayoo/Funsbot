@@ -24,7 +24,7 @@ class Fun(commands.Cog):
     async def on_message(self, message):
 
         for word in self.blacklisted:
-            if (word.lower().strip() in str(message.content).lower()):
+            if (word.lower().strip() in str(message.content).lower().strip()):
                 await message.add_reaction('💀')
                 await message.reply("https://tenor.com/view/rotating-skull-gif-24524852")
             else:
@@ -36,11 +36,11 @@ class Fun(commands.Cog):
     async def moneta(self, interaction: discord.Interaction):
         await self.bot.embed(interaction, random.choice(self.flip_array))
 
-    @app_commands.command(name="zarcik", description="zarcik kosmonaucik (niestety tylko po ang, ale z czasem zmienie jezyk na polski)")
-    async def zarcik(self, interaction: discord.Interaction):
-        j = await Jokes()
-        joke = await j.get_joke(response_format="txt", lang="en", category=['dark'])
-        await self.bot.embed(interaction, joke)
+    # @app_commands.command(name="zarcik", description="zarcik kosmonaucik (niestety tylko po ang, ale z czasem zmienie jezyk na polski)")
+    # async def zarcik(self, interaction: discord.Interaction):
+    #     j = await Jokes()
+    #     joke = await j.get_joke(response_format="txt", lang="en", category=['dark'])
+    #     await self.bot.embed(interaction, joke)
 
 
 async def setup(bot):
