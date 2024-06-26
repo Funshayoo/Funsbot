@@ -18,7 +18,8 @@ class Song:
 
 
 class MusicClient:
-    vc = None
+    voice_client = None
+    voice_channel = None
 
     # 2d array containing [song, channel]
     music_queue = []
@@ -50,26 +51,27 @@ class Music(commands.Cog):
             # ! remove the first element as you are currently playing it
             Song.nowplaying = MusicClient.music_queue[0][0]['title']
             Song.nowplaying_source = MusicClient.music_queue[0][0]['source']
+            MusicClient.voice_channel = MusicClient.music_queue[0][1]
             MusicClient.music_queue.pop(0)
 
-            MusicClient.vc.play(discord.FFmpegPCMAudio(
+            MusicClient.voice_client.play(discord.FFmpegPCMAudio(
                 Song.nowplaying_source, **Options.FFMPEG_OPTIONS), after=lambda e: self.song_finished())
-            MusicClient.vc.pause()
-            MusicClient.vc.resume()
+            MusicClient.voice_client.pause()
+            MusicClient.voice_client.resume()
         else:
             MusicClient.is_playing = False
 
     def song_finished(self):
-        if MusicClient.is_looped is True:
-            MusicClient.vc.play(discord.FFmpegPCMAudio(
-                Song.nowplaying_source, **Options.FFMPEG_OPTIONS), after=lambda e: self.song_finished())
-        elif len(MusicClient.music_queue) > 0:
-            self.play_music()
-        else:
+        if len(MusicClient.voice_channel.members) < 2 or (not MusicClient.is_looped and len(MusicClient.music_queue) == 0):
             MusicClient.is_playing = False
             MusicClient.is_paused = False
             run_coroutine_threadsafe(
-                MusicClient.vc.disconnect(), self.bot.loop)
+                MusicClient.voice_client.disconnect(), self.bot.loop)
+        elif MusicClient.is_looped:
+            MusicClient.voice_client.play(discord.FFmpegPCMAudio(
+                Song.nowplaying_source, **Options.FFMPEG_OPTIONS), after=lambda e: self.song_finished())
+        else:  # len(MusicClient.music_queue) > 0
+            self.play_music()
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -91,16 +93,14 @@ class Music(commands.Cog):
                 if song.startswith(i):
                     song.replace(i, '')
 
-            # query = " ".join(song)
             song = self.search_yt(song)
-            print(song)
             if type(song) == type(True):
                 await self.bot.embed(interaction, "Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format", followup=True)
             else:
                 MusicClient.music_queue.append([song, user_voice.channel])
 
-                if MusicClient.vc is None or not MusicClient.vc.is_connected():
-                    MusicClient.vc = await MusicClient.music_queue[0][1].connect()
+                if MusicClient.voice_client is None or not MusicClient.voice_client.is_connected():
+                    MusicClient.voice_client = await MusicClient.music_queue[0][1].connect()
 
                 if MusicClient.is_playing is False:
                     self.play_music()
@@ -113,19 +113,19 @@ class Music(commands.Cog):
         if MusicClient.is_playing:
             MusicClient.is_playing = False
             MusicClient.is_paused = True
-            MusicClient.vc.pause()
+            MusicClient.voice_client.pause()
             await self.bot.embed(interaction, "Pause on")
         elif MusicClient.is_paused:
             MusicClient.is_paused = False
             MusicClient.is_playing = True
-            MusicClient.vc.resume()
+            MusicClient.voice_client.resume()
             await self.bot.embed(interaction, "Pause off")
 
     @app_commands.command(name="skip", description="Skips the current song being played")
     @app_commands.guild_only()
     async def skip(self, interaction: discord.Interaction):
-        if MusicClient.vc is not None and MusicClient.vc.is_connected() and len(MusicClient.music_queue) > 0:
-            MusicClient.vc.pause()
+        if MusicClient.voice_client is not None and MusicClient.voice_client.is_connected() and len(MusicClient.music_queue) > 0:
+            MusicClient.voice_client.pause()
             self.play_music()
             await self.bot.embed(interaction, title="Song skipped", description=f"Nowplaying: {Song.nowplaying}")
         else:
@@ -149,8 +149,8 @@ class Music(commands.Cog):
     @app_commands.command(name="queue_clear", description="Stops the music and clears the queue")
     @app_commands.guild_only()
     async def queue_clear(self, interaction: discord.Interaction):
-        if MusicClient.vc is not None and MusicClient.is_playing:
-            MusicClient.vc.stop()
+        if MusicClient.voice_client is not None and MusicClient.is_playing:
+            MusicClient.voice_client.stop()
         MusicClient.music_queue = []
         await self.bot.embed(interaction, "Music queue cleared")
 
@@ -160,7 +160,7 @@ class Music(commands.Cog):
         MusicClient.is_playing = False
         MusicClient.is_paused = False
         MusicClient.music_queue = []
-        await MusicClient.vc.disconnect()
+        await MusicClient.voice_client.disconnect()
         await self.bot.embed(interaction, "Bot left the voice chat")
 
     @app_commands.command(name="nowplaying", description="Prints the current song name")
