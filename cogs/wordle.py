@@ -10,9 +10,7 @@ class Wordle(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        # self.is_playing = False
         self.answer = ""
-        # self.tries_left = 0
 
         self.letter_colors = {"green": "<:green:1149418205027238038>",
                               "yellow": "<:yellow:1149418215831777390>", "grey": "<:grey:1149418192297537596>"}

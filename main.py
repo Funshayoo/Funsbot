@@ -44,19 +44,12 @@ async def load_extensions():
 @bot.event
 async def on_ready():
     # change bot activity
-    await bot.change_presence(activity=discord.Game(name='przezycie z pania z edb'))
+    await bot.change_presence(activity=discord.Game(name='Łączność to przeszłość'))
     print(f"""
-  _   _       _                       
- | \ | |     (_)                      
- |  \| | __ _ _ _ __ ___   __ _ _ __  
- | . ` |/ _` | | '_ ` _ \ / _` | '_ \ 
- | |\  | (_| | | | | | | | (_| | | | |
- |_| \_|\__,_| |_| |_| |_|\__,_|_| |_|
-            _/ |                      
-           |__/                       
-        made by Funshayo
-        Logged in as: {bot.user}
-        Discord version: {discord.__version__}
+Bot is up and running
+made by Funshayo
+Logged in as: {bot.user}
+Discord version: {discord.__version__}
     """)
     # ! sync all commands
     try:

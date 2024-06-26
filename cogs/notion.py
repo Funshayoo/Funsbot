@@ -72,15 +72,10 @@ def getHomework(groups):
 def GetHomeworkData(result):
     # you can print result here and check the format of the answer.
     homework_id = result['id']
-    print(homework_id)
     properties = result['properties']
-    print(properties)
     date = properties['Date']['date']['start']
-    print(date)
     name = properties['Name']['title'][0]['text']['content']
-    print(name)
     type = properties['Type']['select']['name']
-    print(type)
     group = properties['Grupa']['select']['name']
 
     return {
@@ -122,29 +117,29 @@ class GroupView(discord.ui.View):
         max_values=4
     )
     async def select_callback(self, interaction: discord.Interaction, select_item: discord.ui.Select):
-        # await interaction.response.defer()
         self.groups = select_item.values
-        print(self.groups)
         homework = getHomework(self.groups)
 
         embed = discord.Embed(color=0x2F3136)
+        embed.description = "[*Lista zadań*](https://funshayo.notion.site/ZS-lista-cb49825d92a7466b80e4621f94e7f04d?pvs=4)\n"
+        embed.description += "[*Sprawozdanka*](https://sprawozdanka.ct8.pl/)\n"
+
         if homework is None:
-            embed.title = "Nie ma zadnych zadan <:najman:1150035175300923502>"
-            embed.description = ""
+            embed.title = "Na jutro nie ma zadnych zadan <:najman:1150035175300923502>"
         else:
-            embed.description = homework
+            embed.description += homework
             embed.title = "Zadania:"
         await interaction.response.send_message(embed=embed, view=None, ephemeral=True)
         self.stop()
 
 
-class Learning_system(commands.Cog):
+class Notion(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     @ commands.Cog.listener()
     async def on_ready(self):
-        print('Loaded learning_system.py!')
+        print('Loaded notion.py!')
 
     @ app_commands.command(name="zadania", description="Zobacz zapowiedziane zadania")
     async def zadania(self, interaction: discord.Interaction):
@@ -154,4 +149,4 @@ class Learning_system(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(Learning_system(bot))
+    await bot.add_cog(Notion(bot))
